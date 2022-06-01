@@ -1,0 +1,15 @@
+{
+  "FMSInfo": {
+    "open": true
+  },
+  "LiveWindow": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client",
+    "serverTeam": "5924"
+  },
+  "SmartDashboard": {
+    "open": true
+  }
+}
