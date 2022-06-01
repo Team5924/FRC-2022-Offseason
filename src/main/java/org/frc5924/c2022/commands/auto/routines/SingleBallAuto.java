@@ -2,16 +2,17 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auto.routines;
+package org.frc5924.c2022.commands.auto.routines;
+
+import org.frc5924.c2022.Constants.DriveConstants;
+import org.frc5924.c2022.commands.ToggleShooter;
+import org.frc5924.c2022.commands.auto.AutoShoot;
+import org.frc5924.c2022.commands.auto.DriveDistance;
+import org.frc5924.c2022.subsystems.ConveyorSubsystem;
+import org.frc5924.c2022.subsystems.DriveSubsystem;
+import org.frc5924.c2022.subsystems.ShooterSubsystem;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.ToggleShooter;
-import frc.robot.commands.auto.AutoShoot;
-import frc.robot.commands.auto.DriveDistance;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ConveyorSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:

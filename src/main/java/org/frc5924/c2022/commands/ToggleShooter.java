@@ -2,31 +2,31 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package org.frc5924.c2022.commands;
+
+import org.frc5924.c2022.subsystems.ShooterSubsystem;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ToggleIntake extends InstantCommand {
-  private final IntakeSubsystem m_intake;
+public class ToggleShooter extends InstantCommand {
+  private final ShooterSubsystem m_shooter;
 
-  public ToggleIntake(IntakeSubsystem subsystem) {
-    m_intake = subsystem;
-    addRequirements(m_intake);
+  public ToggleShooter(ShooterSubsystem shooterSubsystem) {
+    m_shooter = shooterSubsystem;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (m_intake.isDeployed()) {
-      m_intake.stopIntakeMotor();
-      m_intake.retract();
+    if (m_shooter.isRunning()) {
+      m_shooter.stop();
     } else {
-      m_intake.setIntakeMotorForward();
-      m_intake.deploy();
+      m_shooter.run();
     }
   }
 }

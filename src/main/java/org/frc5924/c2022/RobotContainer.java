@@ -2,7 +2,27 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package org.frc5924.c2022;
+
+import org.frc5924.c2022.Constants.OIConstants;
+import org.frc5924.c2022.commands.Eject;
+import org.frc5924.c2022.commands.ExtendClimber;
+import org.frc5924.c2022.commands.RetractClimber;
+import org.frc5924.c2022.commands.RunConveyor;
+import org.frc5924.c2022.commands.TankDrive;
+import org.frc5924.c2022.commands.ToggleIntake;
+import org.frc5924.c2022.commands.ToggleShooter;
+import org.frc5924.c2022.commands.auto.DriveDistance;
+import org.frc5924.c2022.commands.auto.Rotate;
+import org.frc5924.c2022.commands.auto.routines.LeftDoubleBallAuto;
+import org.frc5924.c2022.commands.auto.routines.RightDoubleBallAuto;
+import org.frc5924.c2022.commands.auto.routines.SingleBallAuto;
+import org.frc5924.c2022.commands.auto.routines.TripleBallAuto;
+import org.frc5924.c2022.subsystems.ClimberSubsystem;
+import org.frc5924.c2022.subsystems.ConveyorSubsystem;
+import org.frc5924.c2022.subsystems.DriveSubsystem;
+import org.frc5924.c2022.subsystems.IntakeSubsystem;
+import org.frc5924.c2022.subsystems.ShooterSubsystem;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -10,25 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.OIConstants;
-import frc.robot.commands.TankDrive;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.ConveyorSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.commands.Eject;
-import frc.robot.commands.ExtendClimber;
-import frc.robot.commands.RetractClimber;
-import frc.robot.commands.RunConveyor;
-import frc.robot.commands.ToggleShooter;
-import frc.robot.commands.ToggleIntake;
-import frc.robot.commands.auto.DriveDistance;
-import frc.robot.commands.auto.Rotate;
-import frc.robot.commands.auto.routines.LeftDoubleBallAuto;
-import frc.robot.commands.auto.routines.RightDoubleBallAuto;
-import frc.robot.commands.auto.routines.SingleBallAuto;
-import frc.robot.commands.auto.routines.TripleBallAuto;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

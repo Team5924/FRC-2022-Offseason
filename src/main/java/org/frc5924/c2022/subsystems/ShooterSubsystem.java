@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package org.frc5924.c2022.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTable;
@@ -9,9 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController;
 
-import frc.robot.Constants.ShooterConstants;
+import org.frc5924.c2022.Constants.ShooterConstants;
+
+import com.revrobotics.SparkMaxPIDController;
 public class ShooterSubsystem extends SubsystemBase {
 
     /**

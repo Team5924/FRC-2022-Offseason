@@ -2,33 +2,33 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auto.routines;
+package org.frc5924.c2022.commands.auto.routines;
 
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ConveyorSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import org.frc5924.c2022.Constants.DriveConstants;
+import org.frc5924.c2022.commands.ToggleIntake;
+import org.frc5924.c2022.commands.ToggleShooter;
+import org.frc5924.c2022.commands.auto.AutoShoot;
+import org.frc5924.c2022.commands.auto.DriveDistance;
+import org.frc5924.c2022.commands.auto.Rotate;
+import org.frc5924.c2022.commands.auto.WaitTime;
+import org.frc5924.c2022.subsystems.ConveyorSubsystem;
+import org.frc5924.c2022.subsystems.DriveSubsystem;
+import org.frc5924.c2022.subsystems.IntakeSubsystem;
+import org.frc5924.c2022.subsystems.ShooterSubsystem;
 
-import frc.robot.commands.auto.AutoShoot;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.ToggleIntake;
-import frc.robot.commands.ToggleShooter;
-import frc.robot.commands.auto.DriveDistance;
-import frc.robot.commands.auto.Rotate;
-import frc.robot.commands.auto.WaitTime;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RightDoubleBallAuto extends SequentialCommandGroup {
+public class LeftDoubleBallAuto extends SequentialCommandGroup {
   private ShooterSubsystem m_shooter;
   private ConveyorSubsystem m_conveyor;
   private DriveSubsystem m_drivetrain;
   private IntakeSubsystem m_intake;
 
   /** Creates a new DoubleBallAuto. */
-  public RightDoubleBallAuto(ShooterSubsystem shooterSubsystem, ConveyorSubsystem conveyorSubsystem, DriveSubsystem driveSubsystem, IntakeSubsystem intakeSubsystem) {
+  public LeftDoubleBallAuto(ShooterSubsystem shooterSubsystem, ConveyorSubsystem conveyorSubsystem, DriveSubsystem driveSubsystem, IntakeSubsystem intakeSubsystem) {
     m_shooter = shooterSubsystem;
     m_conveyor = conveyorSubsystem;
     m_drivetrain = driveSubsystem;
@@ -43,13 +43,13 @@ public class RightDoubleBallAuto extends SequentialCommandGroup {
       new WaitTime(m_drivetrain, 100),
       new DriveDistance(m_drivetrain, 26.34, DriveConstants.AUTO_DRIVE_SPEED),
       new WaitTime(m_drivetrain, 100),
-      new Rotate(m_drivetrain, -22.5, DriveConstants.AUTO_ROTATE_SPEED),
+      new Rotate(m_drivetrain, 22.5, DriveConstants.AUTO_ROTATE_SPEED),
       new WaitTime(m_drivetrain, 100),
       new DriveDistance(m_drivetrain, (71.47 - 15), DriveConstants.AUTO_DRIVE_SPEED),
       new WaitTime(m_drivetrain, 100),
       new DriveDistance(m_drivetrain, (-71.47 + 15), DriveConstants.AUTO_DRIVE_SPEED),
       new WaitTime(m_drivetrain, 100),
-      new Rotate(m_drivetrain, 22.5, DriveConstants.AUTO_ROTATE_SPEED),
+      new Rotate(m_drivetrain, -22.5, DriveConstants.AUTO_ROTATE_SPEED),
       new WaitTime(m_drivetrain, 100),
       new DriveDistance(m_drivetrain, -27.34, DriveConstants.AUTO_DRIVE_SPEED),
       new WaitTime(m_drivetrain, 100),

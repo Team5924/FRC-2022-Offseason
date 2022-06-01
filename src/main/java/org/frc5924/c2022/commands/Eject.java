@@ -2,10 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package org.frc5924.c2022.commands;
 
-import frc.robot.subsystems.ConveyorSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import org.frc5924.c2022.subsystems.ConveyorSubsystem;
+import org.frc5924.c2022.subsystems.ShooterSubsystem;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class Eject extends CommandBase {

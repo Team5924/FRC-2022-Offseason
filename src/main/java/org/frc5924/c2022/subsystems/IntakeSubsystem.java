@@ -1,15 +1,16 @@
-package frc.robot.subsystems;
+package org.frc5924.c2022.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import org.frc5924.c2022.Constants.IntakeConstants;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid; // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/edu/wpi/first/wpilibj/DoubleSolenoid.html
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
 

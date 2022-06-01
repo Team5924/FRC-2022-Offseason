@@ -2,12 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.auto;
+package org.frc5924.c2022.commands.auto;
+
+import org.frc5924.c2022.Constants.DriveConstants;
+import org.frc5924.c2022.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveDistance extends CommandBase {
   private final DriveSubsystem m_drive;
