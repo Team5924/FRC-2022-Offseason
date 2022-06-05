@@ -9,15 +9,10 @@ import org.frc5924.c2022.commands.Eject;
 import org.frc5924.c2022.commands.ExtendClimber;
 import org.frc5924.c2022.commands.RetractClimber;
 import org.frc5924.c2022.commands.RunConveyor;
-import org.frc5924.c2022.commands.TankDrive;
 import org.frc5924.c2022.commands.ToggleIntake;
 import org.frc5924.c2022.commands.ToggleShooter;
-import org.frc5924.c2022.commands.auto.DriveDistance;
-import org.frc5924.c2022.commands.auto.Rotate;
-import org.frc5924.c2022.commands.auto.routines.LeftDoubleBallAuto;
-import org.frc5924.c2022.commands.auto.routines.RightDoubleBallAuto;
-import org.frc5924.c2022.commands.auto.routines.SingleBallAuto;
-import org.frc5924.c2022.commands.auto.routines.TripleBallAuto;
+import org.frc5924.c2022.commands.drive.CurvatureDrive;
+import org.frc5924.c2022.commands.drive.TurnInPlace;
 import org.frc5924.c2022.subsystems.ClimberSubsystem;
 import org.frc5924.c2022.subsystems.ConveyorSubsystem;
 import org.frc5924.c2022.subsystems.DriveSubsystem;
@@ -42,32 +37,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public static final DriveSubsystem m_drivetrain = new DriveSubsystem();
-  public static final IntakeSubsystem m_intake = new IntakeSubsystem();
-  public static final ConveyorSubsystem m_conveyor = new ConveyorSubsystem();
-  public static final ShooterSubsystem m_shooter = new ShooterSubsystem();
-  public static final ClimberSubsystem m_climber = new ClimberSubsystem();
+  private final DriveSubsystem mDrive = new DriveSubsystem();
+  private final IntakeSubsystem mIntake = new IntakeSubsystem();
+  private final ConveyorSubsystem mConveyor = new ConveyorSubsystem();
+  private final ShooterSubsystem mShooter = new ShooterSubsystem();
+  private final ClimberSubsystem mClimber = new ClimberSubsystem();
 
-  XboxController m_driverController = new XboxController(OIConstants.DRIVER_CONTROLLER);
+  private final XboxController mDriverController = new XboxController(OIConstants.DRIVER_CONTROLLER);
 
-  XboxController m_operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
+  private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mDriverRightBumper = new JoystickButton(mDriverController, XboxController.Button.kRightBumper.value);
 
-  JoystickButton driverA = new JoystickButton(m_driverController, XboxController.Button.kA.value);
-  JoystickButton driverX = new JoystickButton(m_driverController, XboxController.Button.kX.value);
-  JoystickButton driverRightBumper = new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value);
+  private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
-  JoystickButton operatorA = new JoystickButton(m_operatorController, XboxController.Button.kA.value);
-  JoystickButton operatorB = new JoystickButton(m_operatorController, XboxController.Button.kB.value);
-  JoystickButton operatorY = new JoystickButton(m_operatorController, XboxController.Button.kY.value);
-  JoystickButton operatorX = new JoystickButton(m_operatorController, XboxController.Button.kX.value);
-  JoystickButton operatorLeftBumper = new JoystickButton(m_operatorController, XboxController.Button.kLeftBumper.value);
-  JoystickButton operatorRightBumper = new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value);
-
-  // Declaring sendableObject for Autonomous here
-  private final Command m_singleBallAuto = new SingleBallAuto(m_shooter, m_drivetrain, m_conveyor);
-  private final Command m_leftDoubleBallAuto = new LeftDoubleBallAuto(m_shooter, m_conveyor, m_drivetrain, m_intake);
-  private final Command m_rightDoubleBallAuto = new RightDoubleBallAuto(m_shooter, m_conveyor, m_drivetrain, m_intake);
-  private final Command m_tripleBallAuto = new TripleBallAuto(m_shooter, m_conveyor, m_drivetrain, m_intake);
+  private final JoystickButton mOperatorA = new JoystickButton(mOperatorController, XboxController.Button.kA.value);
+  private final JoystickButton mOperatorY = new JoystickButton(mOperatorController, XboxController.Button.kY.value);
+  private final JoystickButton mOperatorLeftBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mOperatorRightBumper = new JoystickButton(mOperatorController, XboxController.Button.kRightBumper.value);
 
   SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
@@ -75,22 +61,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_intake.register();
-    m_conveyor.register();
-    m_shooter.register();
-    m_drivetrain.register();
-    m_climber.register();
+    mIntake.register();
+    mConveyor.register();
+    mShooter.register();
+    mDrive.register();
+    mClimber.register();
 
-    m_drivetrain.setDefaultCommand(new TankDrive(m_drivetrain, m_driverController::getLeftY, m_driverController::getRightY));
-    m_conveyor.setDefaultCommand(new RunConveyor(m_conveyor, m_intake));
+    mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightY));
+    mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
 
     // Configure the button bindings
     configureButtonBindings();
-
-    m_autoChooser.setDefaultOption("Single Ball Auto", m_singleBallAuto);
-    m_autoChooser.addOption("Left Double Ball Auto", m_leftDoubleBallAuto);
-    m_autoChooser.addOption("Right Double Ball Auto", m_rightDoubleBallAuto);
-    m_autoChooser.addOption("Triple Ball Auto", m_tripleBallAuto);
 
     SmartDashboard.putData(m_autoChooser);
   }
@@ -104,14 +85,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    driverRightBumper.whenPressed(new ToggleIntake(m_intake));
+    mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    mDriverRightBumper.whenPressed(new ToggleIntake(mIntake));
 
-    operatorA.whenHeld(new Eject(m_conveyor, m_shooter));
-    operatorB.whenPressed(new DriveDistance(m_drivetrain, 12, 0.1));
-    //operatorB.whenPressed(new Rotate(m_drivetrain, 90, 0.1, true));
-    operatorY.whenPressed(new ToggleShooter(m_shooter));
-    operatorLeftBumper.whenHeld(new RetractClimber(m_climber));
-    operatorRightBumper.whenHeld(new ExtendClimber(m_climber));
+    mOperatorA.whenHeld(new Eject(mConveyor, mShooter));
+    mOperatorY.whenPressed(new ToggleShooter(mShooter));
+    mOperatorLeftBumper.whenHeld(new RetractClimber(mClimber));
+    mOperatorRightBumper.whenHeld(new ExtendClimber(mClimber));
   }
 
   /**

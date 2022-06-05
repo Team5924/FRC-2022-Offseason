@@ -22,30 +22,24 @@ public final class Constants {
     }
     public static final class DriveConstants {
         // Motor IDs
-        public static final int LEFT_FRONT_TALON = 4;
-        public static final int RIGHT_FRONT_TALON = 2;
-        public static final int LEFT_BACK_TALON = 3;
-        public static final int RIGHT_BACK_TALON = 1;
+        public static final int kLeftFront = 4;
+        public static final int kLeftBack = 3;
+        public static final int kRightFront = 2;
+        public static final int kRightBack = 1;
 
         // Max velocity that the drivetrain can do in sensor units per 100ms
-        public static final double MAX_VELOCITY = 21776.25;
+        public static final double kMaxSpeed = 21776.25;
         // Percentage to limit drivetrain to (of above number)
         public static final double PERCENT_MAX_VELOCITY_LIMIT = 0.8;
 
-        public static final int TIMEOUT_MS = 30;
-        public static final int PID_LOOP_IDX = 0;
-        public static final int SLOT_IDX = 0;
-        public static final double F = 0.75 * 1023 / (MAX_VELOCITY * PERCENT_MAX_VELOCITY_LIMIT);
-        public static final double P = 0.16;
-        public static final double I = 0;
-        public static final double D = 1.6;
+        public static final double ks = 0;
+        public static final double kv = 0;
+        public static final double ka = 0;
 
-        // Current limit for motors in amps
-        public static final double CURRENT_LIMIT = 40;
-        // Amps at which to trigger current limit
-        public static final double TRIGGER_THRESHOLD_CURRENT = 45;
-        // Trigger threshold must be attained for this amount of time to trigger current limit
-        public static final double TRIGGER_THRESHOLD_TIME = 1;
+        public static final double kP = 0.16;
+        public static final double kI = 0;
+        public static final double kD = 1.6;
+
         public static final double WHEEL_CIRCUMFERENCE = 4 * Math.PI;
 
         public static final double AUTO_DRIVE_SPEED = 0.4;
