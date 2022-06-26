@@ -68,7 +68,7 @@ public class RobotContainer {
     mClimber.register();
 
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightY));
-    mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
+    //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
 
     // Configure the button bindings
     configureButtonBindings();
