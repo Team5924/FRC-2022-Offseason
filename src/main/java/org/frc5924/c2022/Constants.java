@@ -4,6 +4,9 @@
 
 package org.frc5924.c2022;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -21,16 +24,8 @@ public final class Constants {
         public static final double DRIVER_CONTROLLER_DEADBAND = 0.08;
     }
     public static final class DriveConstants {
-        // Motor IDs
-        public static final int kLeftFront = 4;
-        public static final int kLeftBack = 3;
-        public static final int kRightFront = 2;
-        public static final int kRightBack = 1;
-
         // Max velocity that the drivetrain can do in sensor units per 100ms
         public static final double kMaxSpeed = 21776.25;
-        // Percentage to limit drivetrain to (of above number)
-        public static final double PERCENT_MAX_VELOCITY_LIMIT = 0.8;
 
         public static final double ks = 0;
         public static final double kv = 0;
@@ -40,11 +35,18 @@ public final class Constants {
         public static final double kI = 0;
         public static final double kD = 1.6;
 
-        public static final double WHEEL_CIRCUMFERENCE = 4 * Math.PI;
+        public static final double kTrackwidthMeters = Units.inchesToMeters(0);
+        public static final double kWheelCircumference = 0;
+        public static final double kGearboxRatio = 0;
 
-        public static final double AUTO_DRIVE_SPEED = 0.4;
-        public static final double AUTO_ROTATE_SPEED = 0.15;
-        public static final double AUTO_INTAKE_BALL_DRIVE_SPEED = 0.1;
+        public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
+
+        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
     }
 
     public static final class ShooterConstants {

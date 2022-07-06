@@ -11,28 +11,41 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 
+import org.frc5924.c2022.Ports;
 import org.frc5924.c2022.Constants.DriveConstants;
+import org.frc5924.c2022.util.Conversions;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SPI;import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
+  private AHRS ahrs;
 
-  private final WPI_TalonFX mLeftFront = new WPI_TalonFX(DriveConstants.kLeftFront);
-  private final WPI_TalonFX mLeftBack = new WPI_TalonFX(DriveConstants.kLeftBack);
-  private final WPI_TalonFX mRightFront = new WPI_TalonFX(DriveConstants.kRightFront);
-  private final WPI_TalonFX mRightBack = new WPI_TalonFX(DriveConstants.kRightBack);
+  private final WPI_TalonFX mLeftFront = new WPI_TalonFX(Ports.kLeftFrontDrive);
+  private final WPI_TalonFX mLeftBack = new WPI_TalonFX(Ports.kLeftBackDrive);
+  private final WPI_TalonFX mRightFront = new WPI_TalonFX(Ports.kRightFrontDrive);
+  private final WPI_TalonFX mRightBack = new WPI_TalonFX(Ports.kRightBackDrive);
+
+  private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
 
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
 
   /** Creates a new Drivetrain. */
   public DriveSubsystem() {
-    TalonFXConfiguration driveConfig = new TalonFXConfiguration();
+    try {
+      ahrs = new AHRS(SPI.Port.kMXP);
+    } catch (RuntimeException ex ) {
+      DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
+    }
 
+    TalonFXConfiguration driveConfig = new TalonFXConfiguration();
     driveConfig.neutralDeadband = 0.001; // Smallest allowed neutral deadband
     driveConfig.nominalOutputForward = 0;
     driveConfig.nominalOutputReverse = 0;
@@ -62,8 +75,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
+
     SmartDashboard.putNumber("Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Velocity", getRightVelocity());
+  }
+
+  public WPI_TalonFX getLeftLeader() {
+    return mLeftFront;
+  }
+
+  public WPI_TalonFX getRightLeader() {
+    return mRightFront;
   }
 
   public double getLeftVelocity() {
@@ -74,6 +97,10 @@ public class DriveSubsystem extends SubsystemBase {
     return mRightFront.getSelectedSensorVelocity();
   }
 
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(Conversions.falconUnitsPer100msToRobotMetersPerSecond(getLeftVelocity(), DriveConstants.kWheelCircumference, DriveConstants.kGearboxRatio), Conversions.falconUnitsPer100msToRobotMetersPerSecond(getRightVelocity(), DriveConstants.kWheelCircumference, DriveConstants.kGearboxRatio));
+  }
+
   public double getLeftPosition() {
     return mLeftFront.getSelectedSensorPosition();
   }
@@ -82,28 +109,22 @@ public class DriveSubsystem extends SubsystemBase {
     return mRightFront.getSelectedSensorPosition();
   }
 
-  public void stopLeft() {
-    mLeftFront.stopMotor();
+  public Pose2d getPose() {
+    return mOdometry.getPoseMeters();
   }
 
-  public void stopRight() {
-    mRightFront.stopMotor();
+  public void zeroHeading() {
+    ahrs.zeroYaw();
   }
 
+  public double getHeading() {
+    return ahrs.getYaw();
+  }
+
+  // Parts of this method taken from WPILib's DifferentialDrive class
   public void curvatureDrive(double leftJoystickY, double rightJoystickX, boolean allowTurnInPlace) {
     double xSpeed = -joystickToOutput(leftJoystickY, 0.03, 0.8);
     double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
-    WheelSpeeds speeds = curvatureDriveIK(xSpeed, zRotation, allowTurnInPlace);
-    double leftSetpoint = speeds.left * DriveConstants.kMaxSpeed;
-    double rightSetpoint = speeds.right * DriveConstants.kMaxSpeed;
-    mLeftFront.set(ControlMode.Velocity, leftSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftSetpoint));
-    mRightFront.set(ControlMode.Velocity, rightSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightSetpoint));
-  }
-
-  // Taken from WPILib's DifferentialDrive class
-  private WheelSpeeds curvatureDriveIK(double xSpeed, double zRotation, boolean allowTurnInPlace) {
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
 
     double leftSpeed;
     double rightSpeed;
@@ -123,7 +144,10 @@ public class DriveSubsystem extends SubsystemBase {
       rightSpeed /= maxMagnitude;
     }
 
-    return new WheelSpeeds(leftSpeed, rightSpeed);
+    double leftSetpoint = leftSpeed * DriveConstants.kMaxSpeed;
+    double rightSetpoint = rightSpeed * DriveConstants.kMaxSpeed;
+    mLeftFront.set(ControlMode.Velocity, leftSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftSetpoint));
+    mRightFront.set(ControlMode.Velocity, rightSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightSetpoint));
   }
 
   // https://www.desmos.com/calculator/4dkyeczdx6
