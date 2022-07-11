@@ -146,6 +146,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     double leftSetpoint = leftSpeed * DriveConstants.kMaxSpeed;
     double rightSetpoint = rightSpeed * DriveConstants.kMaxSpeed;
+
+    SmartDashboard.putNumber("Left Drive Setpoint", leftSetpoint);
+    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
+    SmartDashboard.putNumber("Right Drive Setpoint", rightSetpoint);
+    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
+
     mLeftFront.set(ControlMode.Velocity, leftSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftSetpoint));
     mRightFront.set(ControlMode.Velocity, rightSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightSetpoint));
   }
