@@ -15,7 +15,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import org.frc5924.c2022.Ports;
 import org.frc5924.c2022.Constants.DriveConstants;
-import org.frc5924.c2022.util.Conversions;
+import org.frc5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,7 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
+    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToRobotMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
 
     SmartDashboard.putNumber("Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Velocity", getRightVelocity());

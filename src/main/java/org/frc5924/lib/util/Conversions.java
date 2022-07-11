@@ -1,4 +1,4 @@
-package org.frc5924.c2022.util;
+package org.frc5924.lib.util;
 
 import edu.wpi.first.math.util.Units;
 
@@ -19,7 +19,11 @@ public class Conversions {
         return metersPerSecond;
     }
 
-    public static double sensorUnitsToMeters(double sensorUnits, double wheelCircumferenceInches) {
+    public static double sensorUnitsToRobotMeters(double sensorUnits, double wheelCircumferenceInches) {
         return sensorUnits * 4096 * Units.inchesToMeters(wheelCircumferenceInches);
+    }
+
+    public static double robotMetersToSensorUnits(double robotMeters, double wheelCircumferenceInches) {
+        return robotMeters / Units.inchesToMeters(wheelCircumferenceInches) / 4096;
     }
 }

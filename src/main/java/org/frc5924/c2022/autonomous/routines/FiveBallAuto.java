@@ -7,8 +7,8 @@ package org.frc5924.c2022.autonomous.routines;
 import com.pathplanner.lib.PathPlanner;
 
 import org.frc5924.c2022.Constants.DriveConstants;
-import org.frc5924.c2022.autonomous.TalonFXRamseteCommand;
 import org.frc5924.c2022.subsystems.DriveSubsystem;
+import org.frc5924.lib.autonomous.TalonFXRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
