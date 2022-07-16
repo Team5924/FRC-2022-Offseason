@@ -36,7 +36,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final WPI_TalonFX mRightBack = new WPI_TalonFX(Ports.kRightBackDrive);
 
   // private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
-  private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+  private final DifferentialDriveOdometry mOdometry;
 
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
 
@@ -49,6 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
     } catch (RuntimeException ex) {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
     }
+    mOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
 
     TalonFXConfiguration driveConfig = new TalonFXConfiguration();
     driveConfig.neutralDeadband = 0.001; // Smallest allowed neutral deadband
