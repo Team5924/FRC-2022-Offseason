@@ -57,7 +57,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem.getRightLeader(),
         driveSubsystem),
       new TalonFXRamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5),
+        PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
@@ -67,7 +67,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem.getRightLeader(),
         driveSubsystem),
       new TalonFXRamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5),
+        PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
