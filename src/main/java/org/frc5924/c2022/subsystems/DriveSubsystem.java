@@ -23,7 +23,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -44,7 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     try {
       // ahrs = new AHRS(SPI.Port.kMXP);
-      gyro = new ADXRS450_Gyro(SPI.Port.kMXP);
+      gyro = new ADXRS450_Gyro();
       gyro.calibrate();
     } catch (RuntimeException ex) {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);

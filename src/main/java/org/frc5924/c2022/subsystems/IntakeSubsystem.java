@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final CANSparkMax m_intakeSpark = new CANSparkMax(IntakeConstants.INTAKE_SPARK, MotorType.kBrushless);
 
     public IntakeSubsystem() {
-        //m_compressor.disable();
+        m_compressor.disable();
 
         m_leftDoubleSolenoid.set(DoubleSolenoid.Value.kReverse);
         m_rightDoubleSolenoid.set(DoubleSolenoid.Value.kReverse);
