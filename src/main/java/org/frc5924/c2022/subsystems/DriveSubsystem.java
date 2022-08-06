@@ -21,14 +21,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
-  // private AHRS ahrs;
-  private ADXRS450_Gyro gyro;
+  private AHRS ahrs;
 
   private final WPI_TalonFX mLeftFront = new WPI_TalonFX(Ports.kLeftFrontDrive);
   private final WPI_TalonFX mLeftBack = new WPI_TalonFX(Ports.kLeftBackDrive);
@@ -43,13 +42,11 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public DriveSubsystem() {
     try {
-      // ahrs = new AHRS(SPI.Port.kMXP);
-      gyro = new ADXRS450_Gyro();
-      gyro.calibrate();
+      ahrs = new AHRS(SPI.Port.kMXP);
     } catch (RuntimeException ex) {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
     }
-    mOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+    mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
 
     TalonFXConfiguration driveConfig = new TalonFXConfiguration();
     driveConfig.neutralDeadband = 0.001; // Smallest allowed neutral deadband
@@ -81,10 +78,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToRobotMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
-    mOdometry.update(gyro.getRotation2d(), Conversions.sensorUnitsToRobotMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToRobotMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
+    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToRobotMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
 
-    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+    SmartDashboard.putNumber("Gyro Angle", ahrs.getAngle());
     SmartDashboard.putNumber("Left Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Velocity", getRightVelocity());
   }
@@ -122,13 +118,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void zeroHeading() {
-    // ahrs.zeroYaw();
-    gyro.reset();
+    ahrs.zeroYaw();
   }
 
   public double getHeading() {
-    // return ahrs.getYaw();
-    return gyro.getAngle();
+    return ahrs.getAngle();
   }
 
   // Parts of this method taken from WPILib's DifferentialDrive class
