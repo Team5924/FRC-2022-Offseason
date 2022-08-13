@@ -27,13 +27,13 @@ public final class Constants {
         // Max velocity that the drivetrain can do in sensor units per 100ms
         public static final double kMaxSpeed = 21776.25;
 
-        public static final double ks = 0;
-        public static final double kv = 0;
-        public static final double ka = 0;
+        public static final double ks = 0.5589;
+        public static final double kv = 1.846;
+        public static final double ka = 0.10965;
 
-        public static final double kP = 0.16;
+        public static final double kP = 0;
         public static final double kI = 0;
-        public static final double kD = 1.6;
+        public static final double kD = 0;
 
         public static final double kTrackwidthMeters = Units.inchesToMeters(0);
         public static final double kWheelCircumference = 0;
