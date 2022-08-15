@@ -1,4 +1,4 @@
-package org.frc5924.lib.util;
+package org.first5924.lib.util;
 
 import edu.wpi.first.math.util.Units;
 

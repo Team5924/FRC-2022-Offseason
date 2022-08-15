@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.frc5924.c2022;
+package org.first5924.frc2022.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 

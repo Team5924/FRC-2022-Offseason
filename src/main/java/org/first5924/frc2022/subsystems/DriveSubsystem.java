@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.frc5924.c2022.subsystems;
+package org.first5924.frc2022.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -13,9 +13,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
-import org.frc5924.c2022.Ports;
-import org.frc5924.c2022.Constants.DriveConstants;
-import org.frc5924.lib.util.Conversions;
+import org.first5924.frc2022.constants.Ports;
+import org.first5924.frc2022.constants.Constants.DriveConstants;
+import org.first5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;

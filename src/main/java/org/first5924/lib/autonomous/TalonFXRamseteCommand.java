@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.frc5924.lib.autonomous;
+package org.first5924.lib.autonomous;
 
 import java.util.function.Supplier;
 
@@ -10,8 +10,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import org.frc5924.c2022.Constants.DriveConstants;
-import org.frc5924.lib.util.Conversions;
+import org.first5924.frc2022.constants.Constants.DriveConstants;
+import org.first5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
