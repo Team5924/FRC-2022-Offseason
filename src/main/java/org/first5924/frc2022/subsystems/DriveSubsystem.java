@@ -13,8 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
-import org.first5924.frc2022.constants.Ports;
-import org.first5924.frc2022.constants.Constants.DriveConstants;
+import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -29,10 +28,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   private AHRS ahrs;
 
-  private final WPI_TalonFX mLeftFront = new WPI_TalonFX(Ports.kLeftFrontDrive);
-  private final WPI_TalonFX mLeftBack = new WPI_TalonFX(Ports.kLeftBackDrive);
-  private final WPI_TalonFX mRightFront = new WPI_TalonFX(Ports.kRightFrontDrive);
-  private final WPI_TalonFX mRightBack = new WPI_TalonFX(Ports.kRightBackDrive);
+  private final WPI_TalonFX mLeftFront = new WPI_TalonFX(DriveConstants.kLeftFrontDrive);
+  private final WPI_TalonFX mLeftBack = new WPI_TalonFX(DriveConstants.kLeftBackDrive);
+  private final WPI_TalonFX mRightFront = new WPI_TalonFX(DriveConstants.kRightFrontDrive);
+  private final WPI_TalonFX mRightBack = new WPI_TalonFX(DriveConstants.kRightBackDrive);
 
   // private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
   private final DifferentialDriveOdometry mOdometry;

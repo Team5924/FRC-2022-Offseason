@@ -6,7 +6,7 @@ package org.first5924.frc2022.robot;
 
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
-import org.first5924.frc2022.constants.Constants.OIConstants;
+import org.first5924.frc2022.constants.OIConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -29,7 +29,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem mDrive = new DriveSubsystem();
 
-  private final XboxController mDriverController = new XboxController(OIConstants.DRIVER_CONTROLLER);
+  private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
 

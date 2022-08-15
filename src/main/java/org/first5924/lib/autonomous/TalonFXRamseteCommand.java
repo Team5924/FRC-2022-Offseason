@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import org.first5924.frc2022.constants.Constants.DriveConstants;
+import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.RamseteController;

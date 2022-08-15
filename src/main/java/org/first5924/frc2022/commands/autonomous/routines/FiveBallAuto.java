@@ -6,7 +6,7 @@ package org.first5924.frc2022.commands.autonomous.routines;
 
 import com.pathplanner.lib.PathPlanner;
 
-import org.first5924.frc2022.constants.Constants.DriveConstants;
+import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 import org.first5924.lib.autonomous.TalonFXRamseteCommand;
 
