@@ -7,13 +7,12 @@ package org.first5924.frc2022.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import org.first5924.frc2022.constants.DriveConstants;
+import org.first5924.lib.drivers.TalonFXFactory;
 import org.first5924.lib.util.Conversions;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -28,10 +27,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   private AHRS ahrs;
 
-  private final WPI_TalonFX mLeftFront = new WPI_TalonFX(DriveConstants.kLeftFrontDrive);
-  private final WPI_TalonFX mLeftBack = new WPI_TalonFX(DriveConstants.kLeftBackDrive);
-  private final WPI_TalonFX mRightFront = new WPI_TalonFX(DriveConstants.kRightFrontDrive);
-  private final WPI_TalonFX mRightBack = new WPI_TalonFX(DriveConstants.kRightBackDrive);
+  private final WPI_TalonFX mLeftFront = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftFrontDrive);
+  private final WPI_TalonFX mLeftBack = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftBackDrive);
+  private final WPI_TalonFX mRightFront = TalonFXFactory.createDefaultTalon(DriveConstants.kRightFrontDrive);
+  private final WPI_TalonFX mRightBack = TalonFXFactory.createDefaultTalon(DriveConstants.kRightBackDrive);
 
   // private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
   private final DifferentialDriveOdometry mOdometry;
@@ -47,26 +46,13 @@ public class DriveSubsystem extends SubsystemBase {
     }
     mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
 
-    TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-    driveConfig.neutralDeadband = 0.001; // Smallest allowed neutral deadband
-    driveConfig.nominalOutputForward = 0;
-    driveConfig.nominalOutputReverse = 0;
-    driveConfig.peakOutputForward = 1;
-    driveConfig.peakOutputReverse = -1;
-    driveConfig.voltageCompSaturation = 11;
-    driveConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 43, 57.5, 1.5);
-
-    mLeftFront.configAllSettings(driveConfig);
+    mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
-    mLeftFront.enableVoltageCompensation(true);
     mLeftFront.setInverted(TalonFXInvertType.Clockwise);
-    mLeftFront.set(ControlMode.Velocity, 0);
 
-    mRightFront.configAllSettings(driveConfig);
+    mRightFront.configNeutralDeadband(0.001);
     mRightFront.setNeutralMode(NeutralMode.Brake);
-    mRightFront.enableVoltageCompensation(true);
     mRightFront.setInverted(TalonFXInvertType.CounterClockwise);
-    mRightFront.set(ControlMode.Velocity, 0);
 
     mLeftBack.follow(mLeftFront);
     mLeftBack.setInverted(TalonFXInvertType.FollowMaster);
