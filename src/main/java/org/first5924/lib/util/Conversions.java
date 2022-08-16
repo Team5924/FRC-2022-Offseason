@@ -3,6 +3,8 @@ package org.first5924.lib.util;
 import edu.wpi.first.math.util.Units;
 
 public class Conversions {
+    private Conversions() {};
+
     public static double robotMetersPerSecondToFalconUnitsPer100ms(double metersPerSecond, double wheelCircumferenceInches, double gearboxRatio) {
         double metersPer100ms = metersPerSecond / 10;
         double wheelRotationsPer100ms = metersPer100ms / Units.inchesToMeters(wheelCircumferenceInches);
