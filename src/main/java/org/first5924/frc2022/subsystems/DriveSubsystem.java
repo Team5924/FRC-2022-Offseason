@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import org.first5924.frc2022.constants.DriveConstants;
+import org.first5924.frc2022.constants.RobotConstants;
 import org.first5924.lib.drivers.TalonFXFactory;
 import org.first5924.lib.util.Conversions;
 
@@ -32,10 +33,11 @@ public class DriveSubsystem extends SubsystemBase {
   private final WPI_TalonFX mRightFront = TalonFXFactory.createDefaultTalon(DriveConstants.kRightFrontDrive);
   private final WPI_TalonFX mRightBack = TalonFXFactory.createDefaultTalon(DriveConstants.kRightBackDrive);
 
-  // private final DifferentialDriveOdometry mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
   private final DifferentialDriveOdometry mOdometry;
-
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
+
+  // private DifferentialDriveWheelSpeeds mPrevSpeeds = new DifferentialDriveWheelSpeeds();
+  // private double mPrevTime = -1;
 
   /** Creates a new Drivetrain. */
   public DriveSubsystem() {
@@ -44,6 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
     } catch (RuntimeException ex) {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
     }
+
     mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
 
     mLeftFront.configNeutralDeadband(0.001);
@@ -63,19 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(mLeftFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference), Conversions.sensorUnitsToRobotMeters(mRightFront.getSelectedSensorPosition(), DriveConstants.kWheelCircumference));
-
-    SmartDashboard.putNumber("Gyro Angle", ahrs.getAngle());
-    SmartDashboard.putNumber("Left Velocity", getLeftVelocity());
-    SmartDashboard.putNumber("Right Velocity", getRightVelocity());
-  }
-
-  public WPI_TalonFX getLeftLeader() {
-    return mLeftFront;
-  }
-
-  public WPI_TalonFX getRightLeader() {
-    return mRightFront;
+    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(getLeftPosition(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches), Conversions.sensorUnitsToRobotMeters(getRightPosition(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches));
   }
 
   public double getLeftVelocity() {
@@ -87,7 +78,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(Conversions.falconUnitsPer100msToRobotMetersPerSecond(getLeftVelocity(), DriveConstants.kWheelCircumference, DriveConstants.kGearboxRatio), Conversions.falconUnitsPer100msToRobotMetersPerSecond(getRightVelocity(), DriveConstants.kWheelCircumference, DriveConstants.kGearboxRatio));
+    return new DifferentialDriveWheelSpeeds(Conversions.falconToRobotMPS(getLeftVelocity(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches), Conversions.falconToRobotMPS(getRightVelocity(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches));
   }
 
   public double getLeftPosition() {
@@ -102,47 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
     return mOdometry.getPoseMeters();
   }
 
-  public void zeroHeading() {
-    ahrs.zeroYaw();
-  }
-
   public double getHeading() {
-    return ahrs.getAngle();
-  }
-
-  // Parts of this method taken from WPILib's DifferentialDrive class
-  public void curvatureDrive(double leftJoystickY, double rightJoystickX, boolean allowTurnInPlace) {
-    double xSpeed = -joystickToOutput(leftJoystickY, 0.03, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
-
-    double leftSpeed;
-    double rightSpeed;
-
-    if (allowTurnInPlace) {
-      leftSpeed = xSpeed + zRotation;
-      rightSpeed = xSpeed - zRotation;
-    } else {
-      leftSpeed = xSpeed + Math.abs(xSpeed) * zRotation;
-      rightSpeed = xSpeed - Math.abs(xSpeed) * zRotation;
-    }
-
-    // Normalize wheel speeds
-    double maxMagnitude = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-    if (maxMagnitude > 1.0) {
-      leftSpeed /= maxMagnitude;
-      rightSpeed /= maxMagnitude;
-    }
-
-    double leftSetpoint = leftSpeed * DriveConstants.kMaxSpeed;
-    double rightSetpoint = rightSpeed * DriveConstants.kMaxSpeed;
-
-    SmartDashboard.putNumber("Left Drive Setpoint", leftSetpoint);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
-    SmartDashboard.putNumber("Right Drive Setpoint", rightSetpoint);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
-
-    mLeftFront.set(ControlMode.Velocity, leftSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftSetpoint));
-    mRightFront.set(ControlMode.Velocity, rightSetpoint, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightSetpoint));
+    return ahrs.getRotation2d().getDegrees();
   }
 
   // https://www.desmos.com/calculator/4dkyeczdx6
@@ -154,5 +106,76 @@ public class DriveSubsystem extends SubsystemBase {
     } else {
       return 0;
     }
+  }
+
+  // Parts of this method taken from WPILib's DifferentialDrive class
+  public void curvatureDrive(double leftJoystickY, double rightJoystickX) {
+    double xSpeed = joystickToOutput(-leftJoystickY, 0.03, 0.8);
+    double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
+
+    double leftSpeedPercent = xSpeed + (Math.abs(xSpeed) * zRotation);
+    double rightSpeedPercent = xSpeed - (Math.abs(xSpeed) * zRotation);
+
+    // Normalize wheel speeds
+    double maxMagnitude = Math.max(Math.abs(leftSpeedPercent), Math.abs(rightSpeedPercent));
+    if (maxMagnitude > 1.0) {
+      leftSpeedPercent /= maxMagnitude;
+      rightSpeedPercent /= maxMagnitude;
+    }
+
+    drivePercent(leftSpeedPercent, rightSpeedPercent);
+  }
+
+  // Parts of this method taken from WPILib's DifferentialDrive class
+  public void turnInPlace(double leftJoystickY, double rightJoystickX) {
+    double xSpeed = -joystickToOutput(leftJoystickY, 0.03, 0.8);
+    double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
+
+    double leftSpeedPercent = xSpeed + zRotation;
+    double rightSpeedPercent = xSpeed - zRotation;
+
+    // Normalize wheel speeds
+    double maxMagnitude = Math.max(Math.abs(leftSpeedPercent), Math.abs(rightSpeedPercent));
+    if (maxMagnitude > 1.0) {
+      leftSpeedPercent /= maxMagnitude;
+      rightSpeedPercent /= maxMagnitude;
+    }
+
+    drivePercent(leftSpeedPercent, rightSpeedPercent);
+  }
+
+  public void drivePercent(double leftPercent, double rightPercent) {
+    double leftRPM = leftPercent * DriveConstants.kMaxRPM;
+    double rightRPM = rightPercent * DriveConstants.kMaxRPM;
+
+    double leftRotationsPerSecond = Conversions.RPMToRotationsPerSecond(leftRPM);
+    double rightRotationsPerSecond = Conversions.RPMToRotationsPerSecond(rightRPM);
+
+    double leftSpeedFalcon = Conversions.RPMToFalcon(leftRPM);
+    double rightSpeedFalcon = Conversions.RPMToFalcon(rightRPM);
+
+    SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
+    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
+    SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
+    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
+
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftRotationsPerSecond) / RobotConstants.kNominalVoltage);
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightRotationsPerSecond) / RobotConstants.kNominalVoltage);
+  }
+
+  public void driveMPS(double leftMPS, double rightMPS) {
+    double leftSpeedFalcon = Conversions.robotMPSToFalcon(leftMPS, DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches);
+    double rightSpeedFalcon = Conversions.robotMPSToFalcon(rightMPS, DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches);
+
+    double leftRotationsPerSecond = Conversions.falconToRotationsPerSecond(leftSpeedFalcon);
+    double rightRotationsPerSecond = Conversions.falconToRotationsPerSecond(rightSpeedFalcon);
+
+    SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
+    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
+    SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
+    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
+
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftRotationsPerSecond) / RobotConstants.kNominalVoltage);
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightRotationsPerSecond) / RobotConstants.kNominalVoltage);
   }
 }

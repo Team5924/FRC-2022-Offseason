@@ -8,10 +8,9 @@ import com.pathplanner.lib.PathPlanner;
 
 import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
-import org.first5924.lib.autonomous.TalonFXRamseteCommand;
 
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -24,57 +23,42 @@ public class FiveBallAuto extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new TalonFXRamseteCommand(
+      new RamseteCommand(
         PathPlanner.loadPath("5 Ball Auto A", 3, 2),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
         DriveConstants.kDriveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        driveSubsystem.getLeftLeader(),
-        driveSubsystem.getRightLeader(),
+        driveSubsystem::driveMPS,
         driveSubsystem),
       new WaitCommand(1),
-      new TalonFXRamseteCommand(
+      new RamseteCommand(
         PathPlanner.loadPath("5 Ball Auto B", 3, 2),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
         DriveConstants.kDriveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        driveSubsystem.getLeftLeader(),
-        driveSubsystem.getRightLeader(),
+        driveSubsystem::driveMPS,
         driveSubsystem),
       new WaitCommand(0.5),
-      new TalonFXRamseteCommand(
+      new RamseteCommand(
         PathPlanner.loadPath("5 Ball Auto C", 3.5, 2.5),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
         DriveConstants.kDriveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        driveSubsystem.getLeftLeader(),
-        driveSubsystem.getRightLeader(),
+        driveSubsystem::driveMPS,
         driveSubsystem),
-      new TalonFXRamseteCommand(
+      new RamseteCommand(
         PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
         DriveConstants.kDriveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        driveSubsystem.getLeftLeader(),
-        driveSubsystem.getRightLeader(),
+        driveSubsystem::driveMPS,
         driveSubsystem),
-      new TalonFXRamseteCommand(
+      new RamseteCommand(
         PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true),
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka),
         DriveConstants.kDriveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        driveSubsystem.getLeftLeader(),
-        driveSubsystem.getRightLeader(),
+        driveSubsystem::driveMPS,
         driveSubsystem),
       new WaitCommand(1)
     );

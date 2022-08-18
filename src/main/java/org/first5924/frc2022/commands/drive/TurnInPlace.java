@@ -31,7 +31,7 @@ public class TurnInPlace extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mDrive.curvatureDrive(mLeftJoystickY.getAsDouble(), mRightJoystickX.getAsDouble(), true);
+    mDrive.turnInPlace(mLeftJoystickY.getAsDouble(), mRightJoystickX.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

@@ -14,9 +14,10 @@ public final class DriveConstants {
     public static final int kRightFrontDrive = 2;
     public static final int kRightBackDrive = 1;
 
-    // Max velocity that the drivetrain can do in sensor units per 100ms
-    public static final double kMaxSpeed = 21776.25;
+    // +-10&%
+    public static final double kMaxRPM = 6380;
 
+    // In units of rotations
     public static final double ks = 0.5589;
     public static final double kv = 1.846;
     public static final double ka = 0.10965;
@@ -26,7 +27,7 @@ public final class DriveConstants {
     public static final double kD = 0;
 
     public static final double kTrackwidthMeters = Units.inchesToMeters(0);
-    public static final double kWheelCircumference = 0;
+    public static final double kWheelCircumferenceInches = 0;
     public static final double kGearboxRatio = 0;
 
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);

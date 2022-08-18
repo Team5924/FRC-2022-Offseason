@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 /** Add your docs here. */
 public class TalonFXFactory {
+    private TalonFXFactory() {};
+
     public static WPI_TalonFX createDefaultTalon(int id) {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.voltageCompSaturation = 10;

@@ -19,11 +19,23 @@ public class Conversions {
         return robotMeters;
     }
 
+    public static double RPMToFalcon(double RPM) {
+        double sensorUnitsPerMinute = RPM * 2048;
+        double falcon = sensorUnitsPerMinute / 600.0;
+        return falcon;
+    }
+
     public static double RPMToFalcon(double RPM, double gearRatio) {
         double motorRPM = RPM * gearRatio;
         double sensorUnitsPerMinute = motorRPM * 2048;
         double falcon = sensorUnitsPerMinute / 600.0;
         return falcon;
+    }
+
+    public static double falconToRPM(double falcon) {
+        double sensorUnitsPerMinute = falcon * 600;
+        double RPM = sensorUnitsPerMinute / 2048;
+        return RPM;
     }
 
     public static double falconToRPM(double falcon, double gearRatio) {
@@ -33,15 +45,35 @@ public class Conversions {
         return mechRPM;
     }
 
-    public static double MPSToFalcon(double MPS, double gearRatio, double wheelCircumferenceInches) {
+    public static double robotMPSToFalcon(double MPS, double gearRatio, double wheelCircumferenceInches) {
         double sensorUnitsPerSecond = robotMetersToSensorUnits(MPS, gearRatio, wheelCircumferenceInches);
         double falcon = sensorUnitsPerSecond / 10;
         return falcon;
     }
 
-    public static double falconToMPS(double falcon, double gearRatio, double wheelCircumferenceInches) {
+    public static double falconToRobotMPS(double falcon, double gearRatio, double wheelCircumferenceInches) {
         double sensorUnitsPerSecond = falcon * 10;
         double MPS = sensorUnitsToRobotMeters(sensorUnitsPerSecond, gearRatio, wheelCircumferenceInches);
         return MPS;
+    }
+
+    public static double RPMToRotationsPerSecond(double RPM) {
+        return RPM / 60;
+    }
+
+    public static double rotationsPerSecondToRPM(double rotationsPerSecond) {
+        return rotationsPerSecond * 60;
+    }
+
+    public static double rotationsPerSecondToFalcon(double rotationsPerSecond) {
+        double RPM = rotationsPerSecondToRPM(rotationsPerSecond);
+        double falcon = RPMToFalcon(RPM);
+        return falcon;
+    }
+
+    public static double falconToRotationsPerSecond(double falcon) {
+        double RPM = falconToRPM(falcon);
+        double rotationsPerSecond = RPMToRotationsPerSecond(RPM);
+        return rotationsPerSecond;
     }
 }
