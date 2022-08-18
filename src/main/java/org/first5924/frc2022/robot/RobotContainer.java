@@ -4,6 +4,7 @@
 
 package org.first5924.frc2022.robot;
 
+import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.constants.OIConstants;
@@ -35,7 +36,7 @@ public class RobotContainer {
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
-  SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+  SendableChooser<Command> mAutoChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,7 +50,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    SmartDashboard.putData(m_autoChooser);
+    mAutoChooser.setDefaultOption("5 Ball Auto", new FiveBallAuto(mDrive));
+    SmartDashboard.putData(mAutoChooser);
   }
 
   /**
@@ -71,6 +73,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoChooser.getSelected();
+    return mAutoChooser.getSelected();
   }
 }
