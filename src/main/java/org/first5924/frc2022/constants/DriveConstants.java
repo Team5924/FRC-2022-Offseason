@@ -14,9 +14,6 @@ public final class DriveConstants {
     public static final int kRightFrontDrive = 2;
     public static final int kRightBackDrive = 1;
 
-    // +-10&%
-    public static final double kMaxRPM = 6380;
-
     // In units of rotations
     public static final double ks = 0.57486;
     public static final double kv = 0.97304;

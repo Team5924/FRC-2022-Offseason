@@ -16,6 +16,7 @@ import org.first5924.frc2022.constants.RobotConstants;
 import org.first5924.lib.drivers.TalonFXFactory;
 import org.first5924.lib.util.Conversions;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -66,7 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToRobotMeters(getLeftPosition(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches), Conversions.sensorUnitsToRobotMeters(getRightPosition(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches));
+    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
   }
 
   public double getLeftVelocity() {
@@ -78,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(Conversions.falconToRobotMPS(getLeftVelocity(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches), Conversions.falconToRobotMPS(getRightVelocity(), DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches));
+    return new DifferentialDriveWheelSpeeds(Conversions.falconToMPS(getLeftVelocity(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.falconToMPS(getRightVelocity(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
   }
 
   public double getLeftPosition() {
@@ -150,37 +151,43 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void drivePercent(double leftPercent, double rightPercent) {
-    double leftRPM = leftPercent * DriveConstants.kMaxRPM;
-    double rightRPM = rightPercent * DriveConstants.kMaxRPM;
+    double leftMotorRPM = leftPercent * RobotConstants.kMaxFalconRPM;
+    double rightMotorRPM = rightPercent * RobotConstants.kMaxFalconRPM;
 
-    double leftRotationsPerSecond = Conversions.RPMToRotationsPerSecond(leftRPM);
-    double rightRotationsPerSecond = Conversions.RPMToRotationsPerSecond(rightRPM);
+    double leftDriveRotationsPerSecond = Conversions.RPMToRotationsPerSecond(leftMotorRPM) / DriveConstants.kGearboxRatio;
+    double rightDriveRotationsPerSecond = Conversions.RPMToRotationsPerSecond(rightMotorRPM) / DriveConstants.kGearboxRatio;
 
-    double leftSpeedFalcon = Conversions.RPMToFalcon(leftRPM);
-    double rightSpeedFalcon = Conversions.RPMToFalcon(rightRPM);
+    double leftSpeedFalcon = Conversions.RPMToFalcon(leftMotorRPM);
+    double rightSpeedFalcon = Conversions.RPMToFalcon(rightMotorRPM);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
     SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
     SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
+    SmartDashboard.putNumber("Unclamped Left CTRE FF", mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage);
+    SmartDashboard.putNumber("Unclamped Right CTRE FF", mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage);
 
-    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftRotationsPerSecond) / RobotConstants.kNominalVoltage);
-    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightRotationsPerSecond) / RobotConstants.kNominalVoltage);
+    mLeftFront.setVoltage(mDriveFeedforward.calculate(leftDriveRotationsPerSecond));
+    mRightFront.setVoltage(mDriveFeedforward.calculate(rightDriveRotationsPerSecond));
+    // mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    // mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
   }
 
   public void driveMPS(double leftMPS, double rightMPS) {
-    double leftSpeedFalcon = Conversions.robotMPSToFalcon(leftMPS, DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches);
-    double rightSpeedFalcon = Conversions.robotMPSToFalcon(rightMPS, DriveConstants.kGearboxRatio, DriveConstants.kWheelCircumferenceInches);
+    double leftSpeedFalcon = Conversions.MPSToFalcon(leftMPS, DriveConstants.kWheelCircumferenceInches) * DriveConstants.kGearboxRatio;
+    double rightSpeedFalcon = Conversions.MPSToFalcon(rightMPS, DriveConstants.kWheelCircumferenceInches) * DriveConstants.kGearboxRatio;
 
-    double leftRotationsPerSecond = Conversions.falconToRotationsPerSecond(leftSpeedFalcon);
-    double rightRotationsPerSecond = Conversions.falconToRotationsPerSecond(rightSpeedFalcon);
+    double leftDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(leftMPS, DriveConstants.kWheelCircumferenceInches);
+    double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumferenceInches);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
     SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
     SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
-    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftRotationsPerSecond) / RobotConstants.kNominalVoltage);
-    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightRotationsPerSecond) / RobotConstants.kNominalVoltage);
+    mLeftFront.setVoltage(mDriveFeedforward.calculate(leftDriveRotationsPerSecond));
+    mRightFront.setVoltage(mDriveFeedforward.calculate(rightDriveRotationsPerSecond));
+    // mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    // mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
   }
 }

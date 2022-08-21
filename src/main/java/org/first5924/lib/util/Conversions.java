@@ -5,29 +5,20 @@ import edu.wpi.first.math.util.Units;
 public class Conversions {
     private Conversions() {};
 
-    public static double robotMetersToSensorUnits(double robotMeters, double gearRatio, double wheelCircumferenceInches) {
-        double wheelRotations = robotMeters / Units.inchesToMeters(wheelCircumferenceInches);
-        double motorRotations = wheelRotations * gearRatio;
-        double sensorUnits = motorRotations * 2048;
+    public static double metersToSensorUnits(double robotMeters, double wheelCircumferenceInches) {
+        double rotations = robotMeters / Units.inchesToMeters(wheelCircumferenceInches);
+        double sensorUnits = rotations * 2048;
         return sensorUnits;
     }
 
-    public static double sensorUnitsToRobotMeters(double sensorUnits, double gearRatio, double wheelCircumferenceInches) {
-        double motorRotations = sensorUnits / 2048;
-        double wheelRotations = motorRotations / gearRatio;
-        double robotMeters = wheelRotations * Units.inchesToMeters(wheelCircumferenceInches);
-        return robotMeters;
+    public static double sensorUnitsToMeters(double sensorUnits, double wheelCircumferenceInches) {
+        double rotations = sensorUnits / 2048;
+        double meters = rotations * Units.inchesToMeters(wheelCircumferenceInches);
+        return meters;
     }
 
     public static double RPMToFalcon(double RPM) {
         double sensorUnitsPerMinute = RPM * 2048;
-        double falcon = sensorUnitsPerMinute / 600.0;
-        return falcon;
-    }
-
-    public static double RPMToFalcon(double RPM, double gearRatio) {
-        double motorRPM = RPM * gearRatio;
-        double sensorUnitsPerMinute = motorRPM * 2048;
         double falcon = sensorUnitsPerMinute / 600.0;
         return falcon;
     }
@@ -38,42 +29,47 @@ public class Conversions {
         return RPM;
     }
 
-    public static double falconToRPM(double falcon, double gearRatio) {
-        double sensorUnitsPerMinute = falcon * 600;
-        double motorRPM = sensorUnitsPerMinute / 2048;
-        double mechRPM = motorRPM / gearRatio;
-        return mechRPM;
-    }
-
-    public static double robotMPSToFalcon(double MPS, double gearRatio, double wheelCircumferenceInches) {
-        double sensorUnitsPerSecond = robotMetersToSensorUnits(MPS, gearRatio, wheelCircumferenceInches);
+    public static double MPSToFalcon(double MPS, double wheelCircumferenceInches) {
+        double sensorUnitsPerSecond = metersToSensorUnits(MPS, wheelCircumferenceInches);
         double falcon = sensorUnitsPerSecond / 10;
         return falcon;
     }
 
-    public static double falconToRobotMPS(double falcon, double gearRatio, double wheelCircumferenceInches) {
+    public static double falconToMPS(double falcon, double wheelCircumferenceInches) {
         double sensorUnitsPerSecond = falcon * 10;
-        double MPS = sensorUnitsToRobotMeters(sensorUnitsPerSecond, gearRatio, wheelCircumferenceInches);
+        double MPS = sensorUnitsToMeters(sensorUnitsPerSecond, wheelCircumferenceInches);
         return MPS;
     }
 
     public static double RPMToRotationsPerSecond(double RPM) {
-        return RPM / 60;
+        double rotationsPerSecond = RPM / 60;
+        return rotationsPerSecond;
     }
 
     public static double rotationsPerSecondToRPM(double rotationsPerSecond) {
-        return rotationsPerSecond * 60;
+        double rotationsPerMinute = rotationsPerSecond * 60;
+        return rotationsPerMinute;
     }
 
     public static double rotationsPerSecondToFalcon(double rotationsPerSecond) {
-        double RPM = rotationsPerSecondToRPM(rotationsPerSecond);
-        double falcon = RPMToFalcon(RPM);
-        return falcon;
+       double sensorUnitsPerSecond = rotationsPerSecond * 2048;
+       double falcon = sensorUnitsPerSecond / 10;
+       return falcon;
     }
 
     public static double falconToRotationsPerSecond(double falcon) {
-        double RPM = falconToRPM(falcon);
-        double rotationsPerSecond = RPMToRotationsPerSecond(RPM);
+        double sensorUnitsPerSecond = falcon * 10;
+        double rotationsPerSecond = sensorUnitsPerSecond / 2048;
         return rotationsPerSecond;
+    }
+
+    public static double MPSToRotationsPerSecond(double MPS, double wheelCircumferenceInches) {
+        double rotationsPerSecond = MPS / wheelCircumferenceInches;
+        return rotationsPerSecond;
+    }
+
+    public static double rotationsPerSecondToMPS(double rotationsPerSecond, double wheelCircumferenceInches) {
+        double MPS = rotationsPerSecond * wheelCircumferenceInches;
+        return MPS;
     }
 }

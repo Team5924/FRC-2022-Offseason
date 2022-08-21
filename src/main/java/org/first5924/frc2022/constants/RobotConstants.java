@@ -7,4 +7,7 @@ package org.first5924.frc2022.constants;
 /** Add your docs here. */
 public final class RobotConstants {
     public static final double kNominalVoltage = 10;
+
+    // +-10&%
+    public static final double kMaxFalconRPM = 6380;
 }
