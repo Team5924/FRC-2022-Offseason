@@ -123,6 +123,11 @@ public class DriveSubsystem extends SubsystemBase {
       rightSpeedPercent /= maxMagnitude;
     }
 
+    SmartDashboard.putNumber("Left Joystick", leftJoystickY);
+    SmartDashboard.putNumber("Right Joystick", rightJoystickX);
+    SmartDashboard.putNumber("xSpeed", xSpeed);
+    SmartDashboard.putNumber("zRotation", zRotation);
+
     drivePercent(leftSpeedPercent, rightSpeedPercent);
   }
 
