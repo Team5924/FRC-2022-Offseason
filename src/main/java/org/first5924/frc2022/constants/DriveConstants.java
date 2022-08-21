@@ -18,9 +18,9 @@ public final class DriveConstants {
     public static final double kMaxRPM = 6380;
 
     // In units of rotations
-    public static final double ks = 0.5589;
-    public static final double kv = 1.846;
-    public static final double ka = 0.10965;
+    public static final double ks = 0.57486;
+    public static final double kv = 0.97304;
+    public static final double ka = 0.065879;
 
     public static final double kP = 0;
     public static final double kI = 0;
