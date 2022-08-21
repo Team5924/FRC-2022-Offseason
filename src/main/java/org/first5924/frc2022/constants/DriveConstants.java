@@ -28,7 +28,7 @@ public final class DriveConstants {
 
     public static final double kTrackwidthMeters = Units.inchesToMeters(0);
     public static final double kWheelCircumferenceInches = 0;
-    public static final double kGearboxRatio = 0;
+    public static final double kGearboxRatio = 9.04;
 
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
