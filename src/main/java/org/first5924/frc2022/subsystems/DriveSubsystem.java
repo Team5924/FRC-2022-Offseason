@@ -110,8 +110,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void curvatureDrive(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = joystickToOutput(-leftJoystickY, 0.03, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
+    double xSpeed = joystickToOutput(-leftJoystickY, 0.08, 0.8);
+    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + (Math.abs(xSpeed) * zRotation);
     double rightSpeedPercent = xSpeed - (Math.abs(xSpeed) * zRotation);
@@ -128,8 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void turnInPlace(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = -joystickToOutput(leftJoystickY, 0.03, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.03, 0.65);
+    double xSpeed = -joystickToOutput(leftJoystickY, 0.08, 0.8);
+    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + zRotation;
     double rightSpeedPercent = xSpeed - zRotation;
