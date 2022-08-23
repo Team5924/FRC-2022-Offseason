@@ -22,10 +22,8 @@ public class TalonFXFactory {
 
         WPI_TalonFX talon = new WPI_TalonFX(id);
         talon.configAllSettings(config);
+        talon.enableVoltageCompensation(true);
         talon.set(ControlMode.PercentOutput, 0);
-
-        // Temporary, check if voltage compensation is being enabled
-        System.out.println(talon.isVoltageCompensationEnabled() ? "Voltage compensation is enabled for talon with id " + id : "Voltage compensation is not enabled for talon with id " + id);
 
         return talon;
     }
