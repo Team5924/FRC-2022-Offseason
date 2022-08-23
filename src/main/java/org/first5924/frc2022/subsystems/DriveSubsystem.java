@@ -52,11 +52,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
-    mLeftFront.setInverted(TalonFXInvertType.Clockwise);
+    mLeftFront.setInverted(TalonFXInvertType.CounterClockwise);
 
     mRightFront.configNeutralDeadband(0.001);
     mRightFront.setNeutralMode(NeutralMode.Brake);
-    mRightFront.setInverted(TalonFXInvertType.CounterClockwise);
+    mRightFront.setInverted(TalonFXInvertType.Clockwise);
 
     mLeftBack.follow(mLeftFront);
     mLeftBack.setInverted(TalonFXInvertType.FollowMaster);
