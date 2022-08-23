@@ -44,7 +44,7 @@ public class RobotContainer {
   public RobotContainer() {
     mDrive.register();
 
-    mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightY));
+    mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
 
     // Configure the button bindings
