@@ -124,11 +124,6 @@ public class DriveSubsystem extends SubsystemBase {
       rightSpeedPercent /= maxMagnitude;
     }
 
-    SmartDashboard.putNumber("Left Joystick", leftJoystickY);
-    SmartDashboard.putNumber("Right Joystick", rightJoystickX);
-    SmartDashboard.putNumber("xSpeed", xSpeed);
-    SmartDashboard.putNumber("zRotation", zRotation);
-
     drivePercent(leftSpeedPercent, rightSpeedPercent);
   }
 
@@ -160,17 +155,8 @@ public class DriveSubsystem extends SubsystemBase {
     double leftSpeedFalcon = Conversions.RPMToFalcon(leftMotorRPM);
     double rightSpeedFalcon = Conversions.RPMToFalcon(rightMotorRPM);
 
-    SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
-    SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
-    SmartDashboard.putNumber("Unclamped Left CTRE FF", mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage);
-    SmartDashboard.putNumber("Unclamped Right CTRE FF", mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage);
-
-    mLeftFront.setVoltage(mDriveFeedforward.calculate(leftDriveRotationsPerSecond));
-    mRightFront.setVoltage(mDriveFeedforward.calculate(rightDriveRotationsPerSecond));
-    // mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
-    // mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
   }
 
   public void driveMPS(double leftMPS, double rightMPS) {
@@ -185,9 +171,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
     SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
-    mLeftFront.setVoltage(mDriveFeedforward.calculate(leftDriveRotationsPerSecond));
-    mRightFront.setVoltage(mDriveFeedforward.calculate(rightDriveRotationsPerSecond));
-    // mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
-    // mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
   }
 }
