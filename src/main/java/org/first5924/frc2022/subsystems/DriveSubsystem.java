@@ -19,6 +19,7 @@ import org.first5924.lib.util.Conversions;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -67,6 +68,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Gyro Angle", getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Left Drive Encoder", getLeftPosition());
+    SmartDashboard.putNumber("Right Drive Encoder", getRightPosition());
+
+    SmartDashboard.putNumber("Odometry X", mOdometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
+    SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
+
     mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
   }
 
@@ -94,8 +103,18 @@ public class DriveSubsystem extends SubsystemBase {
     return mOdometry.getPoseMeters();
   }
 
-  public double getHeading() {
-    return ahrs.getRotation2d().getDegrees();
+  public void resetOdometry(Pose2d pose) {
+    mLeftFront.setSelectedSensorPosition(0);
+    mRightFront.setSelectedSensorPosition(0);
+    mOdometry.resetPosition(pose, ahrs.getRotation2d());
+  }
+
+  public Rotation2d getRotation2d() {
+    return new Rotation2d(-ahrs.getRotation2d().getRadians());
+  }
+
+  public void zeroYaw() {
+    ahrs.zeroYaw();
   }
 
   // https://www.desmos.com/calculator/4dkyeczdx6
@@ -166,6 +185,8 @@ public class DriveSubsystem extends SubsystemBase {
     double leftDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(leftMPS, DriveConstants.kWheelCircumferenceInches);
     double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumferenceInches);
 
+    SmartDashboard.putNumber("Left MPS", leftMPS);
+    SmartDashboard.putNumber("Right MPS", rightMPS);
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
     SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);

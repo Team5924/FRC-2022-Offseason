@@ -64,12 +64,12 @@ public class Conversions {
     }
 
     public static double MPSToRotationsPerSecond(double MPS, double wheelCircumferenceInches) {
-        double rotationsPerSecond = MPS / wheelCircumferenceInches;
+        double rotationsPerSecond = MPS / Units.inchesToMeters(wheelCircumferenceInches);
         return rotationsPerSecond;
     }
 
     public static double rotationsPerSecondToMPS(double rotationsPerSecond, double wheelCircumferenceInches) {
-        double MPS = rotationsPerSecond * wheelCircumferenceInches;
+        double MPS = rotationsPerSecond * Units.inchesToMeters(wheelCircumferenceInches);
         return MPS;
     }
 }
