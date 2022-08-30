@@ -22,13 +22,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
-  private AHRS ahrs;
+  private AHRS mAhrs;
+  private double mGyroOffset = 0;
 
   private final WPI_TalonFX mLeftFront = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftFrontDrive);
   private final WPI_TalonFX mLeftBack = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftBackDrive);
@@ -44,12 +46,12 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public DriveSubsystem() {
     try {
-      ahrs = new AHRS(SPI.Port.kMXP);
+      mAhrs = new AHRS(SPI.Port.kMXP);
     } catch (RuntimeException ex) {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
     }
 
-    mOdometry = new DifferentialDriveOdometry(ahrs.getRotation2d());
+    mOdometry = new DifferentialDriveOdometry(mAhrs.getRotation2d());
 
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
@@ -76,7 +78,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
 
-    mOdometry.update(ahrs.getRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
+    mOdometry.update(mAhrs.getRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
   }
 
   public double getLeftVelocity() {
@@ -106,15 +108,20 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     mLeftFront.setSelectedSensorPosition(0);
     mRightFront.setSelectedSensorPosition(0);
-    mOdometry.resetPosition(pose, ahrs.getRotation2d());
+    mOdometry.resetPosition(pose, mAhrs.getRotation2d());
   }
 
   public Rotation2d getRotation2d() {
-    return new Rotation2d(-ahrs.getRotation2d().getRadians());
+    return new Rotation2d(Units.degreesToRadians(-mAhrs.getRotation2d().getDegrees() + mGyroOffset));
   }
 
-  public void zeroYaw() {
-    ahrs.zeroYaw();
+  public void setGyroAngle(double angle) {
+    mGyroOffset = angle - (-mAhrs.getRotation2d().getDegrees());
+  }
+
+  public void setPose(Pose2d pose) {
+    setGyroAngle(pose.getRotation().getDegrees());
+    resetOdometry(pose);
   }
 
   // https://www.desmos.com/calculator/4dkyeczdx6

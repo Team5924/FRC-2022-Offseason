@@ -30,9 +30,10 @@ public class TestAuto extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(driveSubsystem::zeroYaw),
-      new InstantCommand(driveSubsystem::)
-      new InstantCommand(mTimer::start),
+      new InstantCommand(() -> {
+        driveSubsystem.setPose(testPath.getInitialPose());
+        mTimer.start();
+      }),
       new ParallelDeadlineGroup(
         new RamseteCommand(
           testPath,
