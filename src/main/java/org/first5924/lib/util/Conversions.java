@@ -1,19 +1,17 @@
 package org.first5924.lib.util;
 
-import edu.wpi.first.math.util.Units;
-
 public class Conversions {
     private Conversions() {};
 
-    public static double metersToSensorUnits(double robotMeters, double wheelCircumferenceInches) {
-        double rotations = robotMeters / Units.inchesToMeters(wheelCircumferenceInches);
+    public static double metersToSensorUnits(double robotMeters, double wheelCircumference) {
+        double rotations = robotMeters / wheelCircumference;
         double sensorUnits = rotations * 2048;
         return sensorUnits;
     }
 
-    public static double sensorUnitsToMeters(double sensorUnits, double wheelCircumferenceInches) {
+    public static double sensorUnitsToMeters(double sensorUnits, double wheelCircumference) {
         double rotations = sensorUnits / 2048;
-        double meters = rotations * Units.inchesToMeters(wheelCircumferenceInches);
+        double meters = rotations * wheelCircumference;
         return meters;
     }
 
@@ -29,15 +27,15 @@ public class Conversions {
         return RPM;
     }
 
-    public static double MPSToFalcon(double MPS, double wheelCircumferenceInches) {
-        double sensorUnitsPerSecond = metersToSensorUnits(MPS, wheelCircumferenceInches);
+    public static double MPSToFalcon(double MPS, double wheelCircumference) {
+        double sensorUnitsPerSecond = metersToSensorUnits(MPS, wheelCircumference);
         double falcon = sensorUnitsPerSecond / 10;
         return falcon;
     }
 
-    public static double falconToMPS(double falcon, double wheelCircumferenceInches) {
+    public static double falconToMPS(double falcon, double wheelCircumference) {
         double sensorUnitsPerSecond = falcon * 10;
-        double MPS = sensorUnitsToMeters(sensorUnitsPerSecond, wheelCircumferenceInches);
+        double MPS = sensorUnitsToMeters(sensorUnitsPerSecond, wheelCircumference);
         return MPS;
     }
 
@@ -63,13 +61,13 @@ public class Conversions {
         return rotationsPerSecond;
     }
 
-    public static double MPSToRotationsPerSecond(double MPS, double wheelCircumferenceInches) {
-        double rotationsPerSecond = MPS / Units.inchesToMeters(wheelCircumferenceInches);
+    public static double MPSToRotationsPerSecond(double MPS, double wheelCircumference) {
+        double rotationsPerSecond = MPS / wheelCircumference;
         return rotationsPerSecond;
     }
 
-    public static double rotationsPerSecondToMPS(double rotationsPerSecond, double wheelCircumferenceInches) {
-        double MPS = rotationsPerSecond * Units.inchesToMeters(wheelCircumferenceInches);
+    public static double rotationsPerSecondToMPS(double rotationsPerSecond, double wheelCircumference) {
+        double MPS = rotationsPerSecond * wheelCircumference;
         return MPS;
     }
 }
