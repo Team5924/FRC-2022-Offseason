@@ -5,7 +5,7 @@
 package org.first5924.frc2022.robot;
 
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
-import org.first5924.frc2022.commands.autonomous.routines.TestAuto;
+import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.constants.OIConstants;
@@ -52,7 +52,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     mAutoChooser.setDefaultOption("5 Ball Auto", new FiveBallAuto(mDrive));
-    mAutoChooser.addOption("Test Auto", new TestAuto(mDrive));
+    mAutoChooser.addOption("Print 5 Ball Auto", new FiveBallAutoPrint(mDrive));
     SmartDashboard.putData(mAutoChooser);
   }
 
@@ -75,7 +75,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    // return mAutoChooser.getSelected();
-    return new TestAuto(mDrive);
+    return mAutoChooser.getSelected();
   }
 }

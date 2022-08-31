@@ -10,6 +10,9 @@ import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -18,13 +21,23 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FiveBallAuto extends SequentialCommandGroup {
+  Timer mTimer = new Timer();
+  Trajectory mFiveBallA = PathPlanner.loadPath("5 Ball Auto A", 3, 2);
+  Trajectory mFiveBallB = PathPlanner.loadPath("5 Ball Auto B", 3, 2);
+  Trajectory mFiveBallC = PathPlanner.loadPath("5 Ball Auto C", 3.5, 2.5);
+  Trajectory mFiveBallD = PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true);
+  Trajectory mFiveBallE = PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true);
+
   /** Creates a new FiveBallAuto. */
   public FiveBallAuto(DriveSubsystem driveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new InstantCommand(() -> {
+        driveSubsystem.setOdometryToPose(mFiveBallA.getInitialPose());
+      }),
       new RamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto A", 3, 2),
+        mFiveBallA,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,
@@ -32,7 +45,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem),
       new WaitCommand(1),
       new RamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto B", 3, 2),
+        mFiveBallB,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,
@@ -40,27 +53,26 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem),
       new WaitCommand(0.5),
       new RamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto C", 3.5, 2.5),
+        mFiveBallC,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,
         driveSubsystem::driveMPS,
         driveSubsystem),
       new RamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true),
+        mFiveBallD,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,
         driveSubsystem::driveMPS,
         driveSubsystem),
       new RamseteCommand(
-        PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true),
+        mFiveBallE,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,
         driveSubsystem::driveMPS,
-        driveSubsystem),
-      new WaitCommand(1)
+        driveSubsystem)
     );
   }
 }

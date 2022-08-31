@@ -51,7 +51,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
     }
 
-    mOdometry = new DifferentialDriveOdometry(mAhrs.getRotation2d());
+    mOdometry = new DifferentialDriveOdometry(getOffsetRotation2d());
 
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
@@ -70,7 +70,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Gyro Angle", getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Gyro Angle", getOffsetRotation2d().getDegrees());
     SmartDashboard.putNumber("Left Drive Encoder", getLeftPosition());
     SmartDashboard.putNumber("Right Drive Encoder", getRightPosition());
 
@@ -78,7 +78,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
 
-    mOdometry.update(mAhrs.getRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
+    mOdometry.update(getOffsetRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio);
   }
 
   public double getLeftVelocity() {
@@ -89,10 +89,6 @@ public class DriveSubsystem extends SubsystemBase {
     return mRightFront.getSelectedSensorVelocity();
   }
 
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(Conversions.falconToMPS(getLeftVelocity(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio, Conversions.falconToMPS(getRightVelocity(), DriveConstants.kWheelCircumferenceInches) / DriveConstants.kGearboxRatio);
-  }
-
   public double getLeftPosition() {
     return mLeftFront.getSelectedSensorPosition();
   }
@@ -101,27 +97,26 @@ public class DriveSubsystem extends SubsystemBase {
     return mRightFront.getSelectedSensorPosition();
   }
 
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+      Conversions.falconToMPS(getLeftVelocity(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio,
+      Conversions.falconToMPS(getRightVelocity(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio
+    );
+  }
+
   public Pose2d getPose() {
     return mOdometry.getPoseMeters();
   }
 
-  public void resetOdometry(Pose2d pose) {
-    mLeftFront.setSelectedSensorPosition(0);
-    mRightFront.setSelectedSensorPosition(0);
-    mOdometry.resetPosition(pose, mAhrs.getRotation2d());
-  }
-
-  public Rotation2d getRotation2d() {
+  public Rotation2d getOffsetRotation2d() {
     return new Rotation2d(Units.degreesToRadians(-mAhrs.getRotation2d().getDegrees() + mGyroOffset));
   }
 
-  public void setGyroAngle(double angle) {
-    mGyroOffset = angle - (-mAhrs.getRotation2d().getDegrees());
-  }
-
-  public void setPose(Pose2d pose) {
-    setGyroAngle(pose.getRotation().getDegrees());
-    resetOdometry(pose);
+  public void setOdometryToPose(Pose2d pose) {
+    mGyroOffset = pose.getRotation().getDegrees() - (-mAhrs.getRotation2d().getDegrees());
+    mLeftFront.setSelectedSensorPosition(0);
+    mRightFront.setSelectedSensorPosition(0);
+    mOdometry.resetPosition(pose, getOffsetRotation2d());
   }
 
   // https://www.desmos.com/calculator/4dkyeczdx6
@@ -186,14 +181,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveMPS(double leftMPS, double rightMPS) {
-    double leftSpeedFalcon = Conversions.MPSToFalcon(leftMPS, DriveConstants.kWheelCircumferenceInches) * DriveConstants.kGearboxRatio;
-    double rightSpeedFalcon = Conversions.MPSToFalcon(rightMPS, DriveConstants.kWheelCircumferenceInches) * DriveConstants.kGearboxRatio;
+    double leftSpeedFalcon = Conversions.MPSToFalcon(leftMPS, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
+    double rightSpeedFalcon = Conversions.MPSToFalcon(rightMPS, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
 
-    double leftDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(leftMPS, DriveConstants.kWheelCircumferenceInches);
-    double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumferenceInches);
+    double leftDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(leftMPS, DriveConstants.kWheelCircumference);
+    double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumference);
 
-    SmartDashboard.putNumber("Left MPS", leftMPS);
-    SmartDashboard.putNumber("Right MPS", rightMPS);
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
     SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
