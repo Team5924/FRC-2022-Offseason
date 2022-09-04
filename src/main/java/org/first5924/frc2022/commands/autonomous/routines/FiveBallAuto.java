@@ -22,11 +22,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FiveBallAuto extends SequentialCommandGroup {
   Timer mTimer = new Timer();
-  Trajectory mFiveBallA = PathPlanner.loadPath("5 Ball Auto A", 3, 2);
-  Trajectory mFiveBallB = PathPlanner.loadPath("5 Ball Auto B", 3, 2);
-  Trajectory mFiveBallC = PathPlanner.loadPath("5 Ball Auto C", 3.5, 2.5);
-  Trajectory mFiveBallD = PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true);
-  Trajectory mFiveBallE = PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true);
+  Trajectory mFiveBallA = PathPlanner.loadPath("5 Ball Auto A", 2.5, 2);
+  Trajectory mFiveBallB = PathPlanner.loadPath("5 Ball Auto B", 2.5, 2);
+  Trajectory mFiveBallC = PathPlanner.loadPath("5 Ball Auto C", 2.5, 2);
+  Trajectory mFiveBallD = PathPlanner.loadPath("5 Ball Auto D", 2.5, 2, true);
 
   /** Creates a new FiveBallAuto. */
   public FiveBallAuto(DriveSubsystem driveSubsystem) {
@@ -61,13 +60,6 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem),
       new RamseteCommand(
         mFiveBallD,
-        driveSubsystem::getPose,
-        new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-        DriveConstants.kDriveKinematics,
-        driveSubsystem::driveMPS,
-        driveSubsystem),
-      new RamseteCommand(
-        mFiveBallE,
         driveSubsystem::getPose,
         new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
         DriveConstants.kDriveKinematics,

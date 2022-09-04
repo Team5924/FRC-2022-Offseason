@@ -56,10 +56,12 @@ public class DriveSubsystem extends SubsystemBase {
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
     mLeftFront.setInverted(TalonFXInvertType.CounterClockwise);
+    mLeftFront.config_kP(0, DriveConstants.kP);
 
     mRightFront.configNeutralDeadband(0.001);
     mRightFront.setNeutralMode(NeutralMode.Brake);
     mRightFront.setInverted(TalonFXInvertType.Clockwise);
+    mRightFront.config_kP(0, DriveConstants.kP);
 
     mLeftBack.follow(mLeftFront);
     mLeftBack.setInverted(TalonFXInvertType.FollowMaster);
@@ -176,6 +178,11 @@ public class DriveSubsystem extends SubsystemBase {
     double leftSpeedFalcon = Conversions.RPMToFalcon(leftMotorRPM);
     double rightSpeedFalcon = Conversions.RPMToFalcon(rightMotorRPM);
 
+    SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
+    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
+    SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
+    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
+
     mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
     mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
   }
@@ -194,5 +201,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
     mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+  }
+
+  public void stopDrive() {
+    mLeftFront.stopMotor();
+    mRightFront.stopMotor();
   }
 }

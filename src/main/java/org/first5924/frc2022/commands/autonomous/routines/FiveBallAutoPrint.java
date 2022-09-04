@@ -24,11 +24,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FiveBallAutoPrint extends SequentialCommandGroup {
   Timer mTimer = new Timer();
-  Trajectory fiveBallA = PathPlanner.loadPath("5 Ball Auto A", 3, 2);
-  Trajectory fiveBallB = PathPlanner.loadPath("5 Ball Auto B", 3, 2);
-  Trajectory fiveBallC = PathPlanner.loadPath("5 Ball Auto C", 3.5, 2.5);
-  Trajectory fiveBallD = PathPlanner.loadPath("5 Ball Auto D", 0.3, 1.5, true);
-  Trajectory fiveBallE = PathPlanner.loadPath("5 Ball Auto E", 3.5, 2.5, true);
+  Trajectory fiveBallA = PathPlanner.loadPath("5 Ball Auto A", 1, 1);
+  Trajectory fiveBallB = PathPlanner.loadPath("5 Ball Auto B", 1, 1);
+  Trajectory fiveBallC = PathPlanner.loadPath("5 Ball Auto C", 1, 1);
+  Trajectory fiveBallD = PathPlanner.loadPath("5 Ball Auto D", 1, 1, true);
 
   /** Creates a new FiveBallAuto. */
   public FiveBallAutoPrint(DriveSubsystem driveSubsystem) {
@@ -47,6 +46,7 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
           driveSubsystem::driveMPS,
           driveSubsystem),
         new OutputGoalPose(fiveBallA)),
+      new InstantCommand(driveSubsystem::stopDrive),
       new WaitCommand(1),
       new ParallelDeadlineGroup(
         new RamseteCommand(
@@ -57,6 +57,7 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
           driveSubsystem::driveMPS,
           driveSubsystem),
         new OutputGoalPose(fiveBallB)),
+      new InstantCommand(driveSubsystem::stopDrive),
       new WaitCommand(0.5),
       new ParallelDeadlineGroup(
         new RamseteCommand(
@@ -67,6 +68,8 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
           driveSubsystem::driveMPS,
           driveSubsystem),
         new OutputGoalPose(fiveBallC)),
+      new InstantCommand(driveSubsystem::stopDrive),
+      new WaitCommand(0.25),
       new ParallelDeadlineGroup(
         new RamseteCommand(
           fiveBallD,
@@ -75,16 +78,7 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
           DriveConstants.kDriveKinematics,
           driveSubsystem::driveMPS,
           driveSubsystem),
-        new OutputGoalPose(fiveBallD)),
-      new ParallelDeadlineGroup(
-        new RamseteCommand(
-          fiveBallE,
-          driveSubsystem::getPose,
-          new RamseteController(DriveConstants.kRamseteB, DriveConstants.kRamseteZeta),
-          DriveConstants.kDriveKinematics,
-          driveSubsystem::driveMPS,
-          driveSubsystem),
-        new OutputGoalPose(fiveBallE))
+        new OutputGoalPose(fiveBallD))
     );
   }
 }
