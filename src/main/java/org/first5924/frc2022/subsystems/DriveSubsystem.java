@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
 import org.first5924.frc2022.constants.DriveConstants;
@@ -36,6 +37,9 @@ public class DriveSubsystem extends SubsystemBase {
   private final WPI_TalonFX mLeftBack = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftBackDrive);
   private final WPI_TalonFX mRightFront = TalonFXFactory.createDefaultTalon(DriveConstants.kRightFrontDrive);
   private final WPI_TalonFX mRightBack = TalonFXFactory.createDefaultTalon(DriveConstants.kRightBackDrive);
+
+  private final CANCoder mLeftCANCoder = new CANCoder(DriveConstants.kLeftCANCoder);
+  private final CANCoder mRightCANCoder = new CANCoder(DriveConstants.kRightCANCoder);
 
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
@@ -80,7 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
 
-    mOdometry.update(getOffsetRotation2d(), Conversions.sensorUnitsToMeters(getLeftPosition(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio, Conversions.sensorUnitsToMeters(getRightPosition(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio);
+    mOdometry.update(getOffsetRotation2d(), Conversions.degreesToMeters(getLeftWheelPosition(), DriveConstants.kWheelCircumference), Conversions.degreesToMeters(getRightWheelPosition(), DriveConstants.kWheelCircumference));
   }
 
   public double getLeftVelocity() {
@@ -99,10 +103,26 @@ public class DriveSubsystem extends SubsystemBase {
     return mRightFront.getSelectedSensorPosition();
   }
 
+  public double getLeftWheelVelocity() {
+    return mLeftCANCoder.getVelocity();
+  }
+
+  public double getRightWheelVelocity() {
+    return mRightCANCoder.getVelocity();
+  }
+
+  public double getLeftWheelPosition() {
+    return mRightCANCoder.getPosition();
+  }
+
+  public double getRightWheelPosition() {
+    return mRightCANCoder.getPosition();
+  }
+
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
-      Conversions.falconToMPS(getLeftVelocity(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio,
-      Conversions.falconToMPS(getRightVelocity(), DriveConstants.kWheelCircumference) / DriveConstants.kGearboxRatio
+      Conversions.degreesPerSecondToMPS(getLeftWheelVelocity(), DriveConstants.kWheelCircumference),
+      Conversions.degreesPerSecondToMPS(getRightWheelVelocity(), DriveConstants.kWheelCircumference)
     );
   }
 
@@ -116,8 +136,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setOdometryToPose(Pose2d pose) {
     mGyroOffset = pose.getRotation().getDegrees() - (-mAhrs.getRotation2d().getDegrees());
-    mLeftFront.setSelectedSensorPosition(0);
-    mRightFront.setSelectedSensorPosition(0);
+    mLeftCANCoder.setPosition(0);
+    mRightCANCoder.setPosition(0);
     mOdometry.resetPosition(pose, getOffsetRotation2d());
   }
 
