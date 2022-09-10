@@ -3,40 +3,22 @@ package org.first5924.lib.util;
 public class Conversions {
     private Conversions() {};
 
-    public static double metersToSensorUnits(double robotMeters, double wheelCircumference) {
-        double rotations = robotMeters / wheelCircumference;
-        double sensorUnits = rotations * 2048;
-        return sensorUnits;
-    }
+    // Rotation conversions
 
-    public static double sensorUnitsToMeters(double sensorUnits, double wheelCircumference) {
-        double rotations = sensorUnits / 2048;
-        double meters = rotations * wheelCircumference;
-        return meters;
-    }
 
-    public static double RPMToFalcon(double RPM) {
-        double sensorUnitsPerMinute = RPM * 2048;
-        double falcon = sensorUnitsPerMinute / 600.0;
+
+    // Rotation per time conversions
+
+    public static double rotationsPerSecondToFalcon(double rotationsPerSecond) {
+        double falconUnitsPerSecond = rotationsPerSecond * 2048;
+        double falcon = falconUnitsPerSecond / 10;
         return falcon;
     }
 
-    public static double falconToRPM(double falcon) {
-        double sensorUnitsPerMinute = falcon * 600;
-        double RPM = sensorUnitsPerMinute / 2048;
-        return RPM;
-    }
-
-    public static double MPSToFalcon(double MPS, double wheelCircumference) {
-        double sensorUnitsPerSecond = metersToSensorUnits(MPS, wheelCircumference);
-        double falcon = sensorUnitsPerSecond / 10;
-        return falcon;
-    }
-
-    public static double falconToMPS(double falcon, double wheelCircumference) {
-        double sensorUnitsPerSecond = falcon * 10;
-        double MPS = sensorUnitsToMeters(sensorUnitsPerSecond, wheelCircumference);
-        return MPS;
+    public static double falconToRotationsPerSecond(double falcon) {
+        double falconUnitsPerSecond = falcon * 10;
+        double rotationsPerSecond = falconUnitsPerSecond / 2048;
+        return rotationsPerSecond;
     }
 
     public static double RPMToRotationsPerSecond(double RPM) {
@@ -49,16 +31,56 @@ public class Conversions {
         return rotationsPerMinute;
     }
 
-    public static double rotationsPerSecondToFalcon(double rotationsPerSecond) {
-       double sensorUnitsPerSecond = rotationsPerSecond * 2048;
-       double falcon = sensorUnitsPerSecond / 10;
-       return falcon;
+    public static double RPMToFalcon(double RPM) {
+        double falconUnitsPerMinute = RPM * 2048;
+        double falcon = falconUnitsPerMinute / 600.0;
+        return falcon;
     }
 
-    public static double falconToRotationsPerSecond(double falcon) {
-        double sensorUnitsPerSecond = falcon * 10;
-        double rotationsPerSecond = sensorUnitsPerSecond / 2048;
-        return rotationsPerSecond;
+    public static double falconToRPM(double falcon) {
+        double falconUnitsPerMinute = falcon * 600;
+        double RPM = falconUnitsPerMinute / 2048;
+        return RPM;
+    }
+
+    // Length to rotation / rotation to length conversions
+
+    public static double metersToFalconUnits(double robotMeters, double wheelCircumference) {
+        double rotations = robotMeters / wheelCircumference;
+        double falconUnits = rotations * 2048;
+        return falconUnits;
+    }
+
+    public static double falconUnitsToMeters(double falconUnits, double wheelCircumference) {
+        double rotations = falconUnits / 2048;
+        double meters = rotations * wheelCircumference;
+        return meters;
+    }
+
+    public static double metersToDegrees(double robotMeters, double wheelCircumference) {
+        double rotations = robotMeters / wheelCircumference;
+        double degrees = rotations * 360;
+        return degrees;
+    }
+
+    public static double degreesToMeters(double degrees, double wheelCircumference) {
+        double rotations = degrees / 360;
+        double meters = rotations * wheelCircumference;
+        return meters;
+    }
+
+    // Length over time to rotation over time / rotation over time to length over time conversions
+
+    public static double MPSToFalcon(double MPS, double wheelCircumference) {
+        double falconUnitsPerSecond = metersToFalconUnits(MPS, wheelCircumference);
+        double falcon = falconUnitsPerSecond / 10;
+        return falcon;
+    }
+
+    public static double falconToMPS(double falcon, double wheelCircumference) {
+        double falconUnitsPerSecond = falcon * 10;
+        double MPS = falconUnitsToMeters(falconUnitsPerSecond, wheelCircumference);
+        return MPS;
     }
 
     public static double MPSToRotationsPerSecond(double MPS, double wheelCircumference) {
@@ -68,6 +90,18 @@ public class Conversions {
 
     public static double rotationsPerSecondToMPS(double rotationsPerSecond, double wheelCircumference) {
         double MPS = rotationsPerSecond * wheelCircumference;
+        return MPS;
+    }
+
+    public static double MPSToDegreesPerSecond(double MPS, double wheelCircumference) {
+        double rotationsPerSecond = MPSToRotationsPerSecond(MPS, wheelCircumference);
+        double degreesPerSecond = rotationsPerSecond * 360;
+        return degreesPerSecond;
+    }
+
+    public static double degreesPerSecondToMPS(double degreesPerSecond, double wheelCircumference) {
+        double rotationsPerSecond = degreesPerSecond / 360;
+        double MPS = rotationsPerSecondToMPS(rotationsPerSecond, wheelCircumference);
         return MPS;
     }
 }
