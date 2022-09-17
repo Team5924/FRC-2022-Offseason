@@ -26,12 +26,15 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
   private AHRS mAhrs;
   private double mGyroOffset = 0;
+
+  private final Timer mTimer = new Timer();
 
   private final WPI_TalonFX mLeftFront = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftFrontDrive);
   private final WPI_TalonFX mLeftBack = TalonFXFactory.createDefaultTalon(DriveConstants.kLeftBackDrive);
@@ -44,11 +47,15 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
 
-  // private DifferentialDriveWheelSpeeds mPrevSpeeds = new DifferentialDriveWheelSpeeds();
-  // private double mPrevTime = -1;
+  private double mPrevLeftDriveRotationsPerSecond = 0;
+  private double mPrevRightDriveRotationsPerSecond = 0;
+
+  private double mPrevTime = 0;
 
   /** Creates a new Drivetrain. */
   public DriveSubsystem() {
+    mTimer.start();
+
     try {
       mAhrs = new AHRS(SPI.Port.kMXP);
     } catch (RuntimeException ex) {
@@ -188,6 +195,11 @@ public class DriveSubsystem extends SubsystemBase {
     drivePercent(leftSpeedPercent, rightSpeedPercent);
   }
 
+  public void driveVoltage(double leftVoltage, double rightVoltage) {
+    mLeftFront.setVoltage(leftVoltage);
+    mRightFront.setVoltage(rightVoltage);
+  }
+
   public void drivePercent(double leftPercent, double rightPercent) {
     double leftMotorRPM = leftPercent * RobotConstants.kMaxFalconRPM;
     double rightMotorRPM = rightPercent * RobotConstants.kMaxFalconRPM;
@@ -208,6 +220,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void driveMPS(double leftMPS, double rightMPS) {
+    double curTime = mTimer.get();
+    double dt = curTime - mPrevTime;
+
     double leftSpeedFalcon = Conversions.MPSToFalcon(leftMPS, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
     double rightSpeedFalcon = Conversions.MPSToFalcon(rightMPS, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
 
@@ -219,8 +234,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
     SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
-    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
-    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+
+    mPrevTime = curTime;
+    mPrevLeftDriveRotationsPerSecond = leftDriveRotationsPerSecond;
+    mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
   }
 
   public void stopDrive() {
