@@ -8,10 +8,10 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class VisionSubsystem extends SubsystemBase {
+public class DriverCameraSubsystem extends SubsystemBase {
   private UsbCamera driverCamera = CameraServer.startAutomaticCapture("Driver Camera", 0);
   /** Creates a new VisionSubsystem. */
-  public VisionSubsystem() {
+  public DriverCameraSubsystem() {
     driverCamera.setFPS(20);
     driverCamera.setBrightness(70);
     driverCamera.setResolution(256, 192);
