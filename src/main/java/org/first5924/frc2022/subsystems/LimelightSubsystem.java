@@ -16,11 +16,11 @@ public class LimelightSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public double getTv() {
-    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
+  public boolean isTargetDetected() {
+    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0) == 1;
   }
 
-  public double getTx() {
+  public double getCrosshairHorizontalOffset() {
     return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
   }
 }
