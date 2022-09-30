@@ -16,13 +16,16 @@ import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.frc2022.constants.RobotConstants;
 import org.first5924.lib.drivers.TalonFXFactory;
 import org.first5924.lib.util.Conversions;
+import org.first5924.lib.util.JoystickToOutput;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -43,6 +46,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final CANCoder mLeftCANCoder = new CANCoder(DriveConstants.kLeftCANCoder);
   private final CANCoder mRightCANCoder = new CANCoder(DriveConstants.kRightCANCoder);
+
+  private final ProfiledPIDController mRotationController = new ProfiledPIDController(DriveConstants.kRotateP, DriveConstants.kRotateI, DriveConstants.kRotateD, new TrapezoidProfile.Constraints(1, 1));
 
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
@@ -79,13 +84,19 @@ public class DriveSubsystem extends SubsystemBase {
 
     mRightBack.follow(mRightFront);
     mRightBack.setInverted(TalonFXInvertType.FollowMaster);
+
+    mLeftCANCoder.configSensorDirection(true);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Gyro Angle", getOffsetRotation2d().getDegrees());
-    SmartDashboard.putNumber("Left Drive Encoder", getLeftPosition());
-    SmartDashboard.putNumber("Right Drive Encoder", getRightPosition());
+    SmartDashboard.putNumber("Left CANCoder", mLeftCANCoder.getPosition());
+    SmartDashboard.putNumber("Right CANCoder", mRightCANCoder.getPosition());
+    SmartDashboard.putNumber("Left CANCoder Velo", getLeftWheelVelocity());
+    SmartDashboard.putNumber("Right CANCoder Velo", getRightWheelVelocity());
+    SmartDashboard.putNumber("Left Falcon Velo", getLeftFalconVelocity());
+    SmartDashboard.putNumber("Right Falcon Velo", getRightFalconVelocity());
 
     SmartDashboard.putNumber("Odometry X", mOdometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
@@ -94,20 +105,12 @@ public class DriveSubsystem extends SubsystemBase {
     mOdometry.update(getOffsetRotation2d(), Conversions.degreesToMeters(getLeftWheelPosition(), DriveConstants.kWheelCircumference), Conversions.degreesToMeters(getRightWheelPosition(), DriveConstants.kWheelCircumference));
   }
 
-  public double getLeftVelocity() {
+  public double getLeftFalconVelocity() {
     return mLeftFront.getSelectedSensorVelocity();
   }
 
-  public double getRightVelocity() {
+  public double getRightFalconVelocity() {
     return mRightFront.getSelectedSensorVelocity();
-  }
-
-  public double getLeftPosition() {
-    return mLeftFront.getSelectedSensorPosition();
-  }
-
-  public double getRightPosition() {
-    return mRightFront.getSelectedSensorPosition();
   }
 
   public double getLeftWheelVelocity() {
@@ -148,21 +151,10 @@ public class DriveSubsystem extends SubsystemBase {
     mOdometry.resetPosition(pose, getOffsetRotation2d());
   }
 
-  // https://www.desmos.com/calculator/4dkyeczdx6
-  private double joystickToOutput(double joystick, double deadzone, double maxOutput) {
-    if (joystick < -deadzone) {
-      return maxOutput / (1 - deadzone) * (joystick + deadzone);
-    } else if (joystick > deadzone) {
-      return maxOutput / (1 - deadzone) * (joystick - deadzone);
-    } else {
-      return 0;
-    }
-  }
-
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void curvatureDrive(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = joystickToOutput(-leftJoystickY, 0.08, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
+    double xSpeed = JoystickToOutput.calculateLinear(-leftJoystickY, 0.08, 0.8);
+    double zRotation = JoystickToOutput.calculateLinear(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + (Math.abs(xSpeed) * zRotation);
     double rightSpeedPercent = xSpeed - (Math.abs(xSpeed) * zRotation);
@@ -179,8 +171,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void turnInPlace(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = -joystickToOutput(leftJoystickY, 0.08, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
+    double xSpeed = -JoystickToOutput.calculateLinear(leftJoystickY, 0.08, 0.8);
+    double zRotation = JoystickToOutput.calculateLinear(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + zRotation;
     double rightSpeedPercent = xSpeed - zRotation;
@@ -211,9 +203,7 @@ public class DriveSubsystem extends SubsystemBase {
     double rightSpeedFalcon = Conversions.RPMToFalcon(rightMotorRPM);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
     mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
     mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
@@ -230,16 +220,26 @@ public class DriveSubsystem extends SubsystemBase {
     double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumference);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
-    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
-    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage);
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage);
 
     mPrevTime = curTime;
     mPrevLeftDriveRotationsPerSecond = leftDriveRotationsPerSecond;
     mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
+  }
+
+  public void driveVolts(double leftVolts, double rightVolts) {
+    mLeftFront.setVoltage(leftVolts);
+    mRightFront.setVoltage(rightVolts);
+  }
+
+  public void gyroRotate(double degrees) {
+    // voltage = mRotationController.calculate(getOffsetRotation2d(), degrees) + feedforward.calculate(controller.getSetpoint().velocity, acceleration));
+    // motor.setVoltage(
+    // lastSpeed = controller.getSetpoint().velocity;
+    // lastTime = Timer.getFPGATimestamp();
   }
 
   public void stopDrive() {
