@@ -4,13 +4,19 @@
 
 package org.first5924.frc2022.robot;
 
+import org.first5924.frc2022.subsystems.DriveSubsystem;
+import org.first5924.frc2022.subsystems.IntakeSubsystem;
+
+import org.first5924.frc2022.commands.drive.CurvatureDrive;
+import org.first5924.frc2022.commands.drive.TurnInPlace;
+import org.first5924.frc2022.commands.intake.DeployIntake;
+import org.first5924.frc2022.commands.intake.RetractIntake;
+
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
-import org.first5924.frc2022.commands.drive.CurvatureDrive;
-import org.first5924.frc2022.commands.drive.TurnInPlace;
+
 import org.first5924.frc2022.constants.OIConstants;
-import org.first5924.frc2022.subsystems.DriveSubsystem;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,13 +37,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem mDrive = new DriveSubsystem();
+  private final IntakeSubsystem mIntake = new IntakeSubsystem();
 
+  // Controller and Buttons
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
+  private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
+  // Commands
   SendableChooser<Command> mAutoChooser = new SendableChooser<>();
 
   /**
@@ -45,6 +56,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     mDrive.register();
+    mIntake.register();
 
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
@@ -52,6 +64,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Auto
     mAutoChooser.setDefaultOption("5 Ball Auto", new FiveBallAuto(mDrive));
     mAutoChooser.addOption("Print 5 Ball Auto", new FiveBallAutoPrint(mDrive));
     mAutoChooser.addOption("Drive One Meter", new DriveOneMeter(mDrive));
@@ -68,6 +81,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    mButtonA.whenHeld(new DeployIntake(mIntake));
+    mButtonB.whenHeld(new RetractIntake(mIntake));
   }
 
   /**

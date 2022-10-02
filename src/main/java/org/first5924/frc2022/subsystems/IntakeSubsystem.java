@@ -4,9 +4,11 @@
 
 package org.first5924.frc2022.subsystems;
 
-import com.ctre.phoenix.motorcontrol.MotorCommutation;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.first5924.frc2022.constants.IntakeConstants;
 
@@ -24,5 +26,14 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void deploy(double speed) {
+    mIntakeMotor.set(speed);
+  }
+
+  public void retract(double speed) {
+    mIntakeMotor.set(-speed);
+
   }
 }
