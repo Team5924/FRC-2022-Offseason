@@ -9,11 +9,11 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DeployIntake extends CommandBase {
-  private final IntakeSubsystem mIntakeSubsystem;
+  private final IntakeSubsystem mIntake;
 
-  public DeployIntake(IntakeSubsystem intakeSubsystem) {
-    mIntakeSubsystem = intakeSubsystem;
-    addRequirements(mIntakeSubsystem);
+  public DeployIntake(IntakeSubsystem intake) {
+    mIntake = intake;
+    addRequirements(mIntake);
   }
 
   // Called when the command is initially scheduled.
@@ -23,7 +23,7 @@ public class DeployIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mIntakeSubsystem.deploy(0.1);
+    mIntake.deploy(0.1);
   }
 
   // Called once the command ends or is interrupted.
