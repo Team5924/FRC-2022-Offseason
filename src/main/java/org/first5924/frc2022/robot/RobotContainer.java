@@ -11,10 +11,12 @@ import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.constants.OIConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
+import org.first5924.frc2022.subsystems.TurretSubsystem;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,10 +33,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem mDrive = new DriveSubsystem();
+  private final TurretSubsystem mTurret = new TurretSubsystem();
 
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
+  private final JoystickButton mDriverA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
@@ -68,6 +73,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    mDriverB.whileHeld(new InstantCommand(() -> mTurret.turnDegrees(10)));
+    mDriverB.whenReleased(new InstantCommand((mTurret::fuckingFreeze)));
+    mDriverA.whenPressed(new InstantCommand(mTurret::zeroTurret));
   }
 
   /**

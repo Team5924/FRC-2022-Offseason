@@ -5,7 +5,15 @@ public class Conversions {
 
     // Rotation conversions
 
+    public static double degreesToFalconUnits(double degrees) {
+        double falconUnits = degrees / 360 * 2048;
+        return falconUnits;
+    }
 
+    public static double falconUnitsToDegrees(double falconUnits) {
+        double degrees = falconUnits / 2048 * 360;
+        return degrees;
+    }
 
     // Rotation per time conversions
 
@@ -103,5 +111,17 @@ public class Conversions {
         double rotationsPerSecond = degreesPerSecond / 360;
         double MPS = rotationsPerSecondToMPS(rotationsPerSecond, wheelCircumference);
         return MPS;
+    }
+
+    public static double degreesPerSecondToFalcon(double degreesPerSecond) {
+        double falconUnitsPerSecond = degreesPerSecond / 360 * 2048;
+        double falcon = falconUnitsPerSecond / 10;
+        return falcon;
+    }
+
+    public static double falconToDegreesPerSecond(double falcon) {
+        double falconUnitsPerSecond = falcon * 10;
+        double degreesPerSecond = falconUnitsPerSecond / 2048 * 360;
+        return degreesPerSecond;
     }
 }
