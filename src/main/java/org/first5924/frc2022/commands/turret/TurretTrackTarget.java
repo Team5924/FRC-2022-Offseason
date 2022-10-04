@@ -39,7 +39,7 @@ public class TurretTrackTarget extends CommandBase {
           } else if (angle < -TurretConstants.kRangeOfMotion / 2) {
             mTurret.setState(TurretState.SEARCHING_RIGHT);
           } else {
-            mTurret.turnDegrees(mLimelight.getCrosshairHorizontalOffset());
+            //mTurret.turnDegrees(mLimelight.getCrosshairHorizontalOffset());
           }
         } else if (mTurret.getTurretPosition() >= 0) {
           mTurret.setState(TurretState.SEARCHING_RIGHT);

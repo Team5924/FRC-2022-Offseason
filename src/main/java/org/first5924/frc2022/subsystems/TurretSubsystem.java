@@ -6,8 +6,6 @@ package org.first5924.frc2022.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -66,7 +64,7 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public double getTurretPosition() {
-    return mTurretEncoder.getPosition() / TurretConstants.kGearRatio;
+    return getPosition() / TurretConstants.kGearRatio;
   }
 
   public double getVelocity() {
@@ -77,15 +75,28 @@ public class TurretSubsystem extends SubsystemBase {
     return mTurretEncoder.getPosition();
   }
 
-  public void turnToDegrees(double goalDegrees) {
-    double acceleration = (mTurretController.getSetpoint().velocity - mLastSpeed) / (Timer.getFPGATimestamp() - mLastTime);
-    double neoRotationError = goalDegrees / 360 * TurretConstants.kGearRatio;
-    mTurretSpark.setVoltage(mTurretController.calculate(getPosition(), neoRotationError) + mTurretFeedforward.calculate(mTurretController.getSetpoint().velocity, acceleration));
+  public void turnToDegrees(double turretSetpointDegrees) {
+    //double acceleration = (mTurretController.getSetpoint().velocity - mLastSpeed) / (Timer.getFPGATimestamp() - mLastTime);
+    double neoSetpointRotations = turretSetpointDegrees / 360 * TurretConstants.kGearRatio;
+    //mTurretSpark.setVoltage(mTurretController.calculate(getPosition(), neoSetpointRotations) + mTurretFeedforward.calculate(mTurretController.getSetpoint().velocity, acceleration));
+    double feedback = mTurretController.calculate(getPosition(), neoSetpointRotations);
+    double feedforward = mTurretFeedforward.calculate(mTurretController.getSetpoint().velocity);
+    SmartDashboard.putNumber("Feedback", feedback);
+    SmartDashboard.putNumber("Feedforward", feedforward);
+    mTurretSpark.setVoltage(feedback + feedforward);
     mLastSpeed = mTurretController.getSetpoint().velocity;
     mLastTime = Timer.getFPGATimestamp();
+    SmartDashboard.putNumber("Velo Setpoint", mTurretController.getSetpoint().velocity);
+    SmartDashboard.putNumber("Pos Setpoint", mTurretController.getSetpoint().position);
+    SmartDashboard.putNumber("Last Time", mLastTime);
+    SmartDashboard.putNumber("Neo Rotation Setpoint", neoSetpointRotations);
   }
 
   public void fuckingFreeze() {
     mTurretSpark.stopMotor();
+  }
+
+  public void setVoltage(double voltage) {
+    mTurretSpark.setVoltage(voltage);
   }
 }

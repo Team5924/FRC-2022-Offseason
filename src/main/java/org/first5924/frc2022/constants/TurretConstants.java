@@ -13,7 +13,7 @@ public class TurretConstants {
     // Degrees
     public static final double kRangeOfMotion = 270;
 
-    public static final double kP = 0.01;
+    public static final double kP = 0.25;
     public static final double kI = 0;
     public static final double kD = 0;
     public static final double kMaxVel = 0.5;

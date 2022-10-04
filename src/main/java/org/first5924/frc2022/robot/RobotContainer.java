@@ -40,6 +40,7 @@ public class RobotContainer {
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mDriverA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
+  private final JoystickButton mDriverX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
@@ -73,9 +74,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mDriverB.whileHeld(new InstantCommand(() -> mTurret.turnDegrees(10)));
+    mDriverB.whileHeld(new InstantCommand(() -> mTurret.turnToDegrees(90)));
     mDriverB.whenReleased(new InstantCommand((mTurret::fuckingFreeze)));
     mDriverA.whenPressed(new InstantCommand(mTurret::zeroTurret));
+    mDriverX.whileHeld(new InstantCommand(() -> mTurret.setVoltage(2)));
   }
 
   /**
