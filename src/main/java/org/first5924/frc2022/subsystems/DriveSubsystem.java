@@ -19,6 +19,7 @@ import org.first5924.lib.util.Conversions;
 import org.first5924.lib.util.JoystickToOutput;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -47,10 +48,10 @@ public class DriveSubsystem extends SubsystemBase {
   private final CANCoder mLeftCANCoder = new CANCoder(DriveConstants.kLeftCANCoder);
   private final CANCoder mRightCANCoder = new CANCoder(DriveConstants.kRightCANCoder);
 
-  private final ProfiledPIDController mRotationController = new ProfiledPIDController(DriveConstants.kRotateP, DriveConstants.kRotateI, DriveConstants.kRotateD, new TrapezoidProfile.Constraints(1, 1));
-
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
+
+  private final TrapezoidProfile.Constraints mRotationTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(DriveConstants.kRotateMaxSpeed, DriveConstants.kRotateMaxAccel);
 
   private double mPrevLeftDriveRotationsPerSecond = 0;
   private double mPrevRightDriveRotationsPerSecond = 0;
@@ -111,6 +112,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getRightFalconVelocity() {
     return mRightFront.getSelectedSensorVelocity();
+  }
+
+  public double getLeftFalconPosition() {
+    return mLeftFront.getSelectedSensorPosition();
+  }
+
+  public double getRightFalconPosition() {
+    return mRightFront.getSelectedSensorPosition();
   }
 
   public double getLeftWheelVelocity() {
@@ -187,11 +196,6 @@ public class DriveSubsystem extends SubsystemBase {
     drivePercent(leftSpeedPercent, rightSpeedPercent);
   }
 
-  public void driveVoltage(double leftVoltage, double rightVoltage) {
-    mLeftFront.setVoltage(leftVoltage);
-    mRightFront.setVoltage(rightVoltage);
-  }
-
   public void drivePercent(double leftPercent, double rightPercent) {
     double leftMotorRPM = leftPercent * RobotConstants.kMaxFalconRPM;
     double rightMotorRPM = rightPercent * RobotConstants.kMaxFalconRPM;
@@ -230,16 +234,27 @@ public class DriveSubsystem extends SubsystemBase {
     mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
   }
 
-  public void driveVolts(double leftVolts, double rightVolts) {
-    mLeftFront.setVoltage(leftVolts);
-    mRightFront.setVoltage(rightVolts);
-  }
-
   public void gyroRotate(double degrees) {
-    // voltage = mRotationController.calculate(getOffsetRotation2d(), degrees) + feedforward.calculate(controller.getSetpoint().velocity, acceleration));
-    // motor.setVoltage(
-    // lastSpeed = controller.getSetpoint().velocity;
-    // lastTime = Timer.getFPGATimestamp();
+    double curTime = mTimer.get();
+    double dt = curTime - mPrevTime;
+
+    double goalRotationError = degrees - getOffsetRotation2d().getDegrees();
+    double goalMetersError = (goalRotationError / 360) * 2 * Math.PI * (DriveConstants.kTrackwidth / 2);
+    double goalFalconError = Conversions.metersToFalconUnits(goalMetersError, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
+    TrapezoidProfile leftRotationTrapezoidProfile = new TrapezoidProfile(mRotationTrapezoidProfileConstraints, new TrapezoidProfile.State(getLeftFalconPosition() - goalFalconError, 0), new TrapezoidProfile.State(getLeftFalconPosition(), getLeftFalconVelocity()));
+    TrapezoidProfile rightRotationTrapezoidProfile = new TrapezoidProfile(mRotationTrapezoidProfileConstraints, new TrapezoidProfile.State(getRightFalconPosition() + goalFalconError, 0), new TrapezoidProfile.State(getRightFalconPosition(), getRightFalconVelocity()));
+    // 0.02 is the how frequently the command execute method runs
+    TrapezoidProfile.State leftSetpoint = leftRotationTrapezoidProfile.calculate(0.02);
+    TrapezoidProfile.State rightSetpoint = rightRotationTrapezoidProfile.calculate(0.02);
+    // Divide setpoint velocity by 10 so it's per 100ms
+    double leftDriveRotationsPerSecond = Conversions.falconToRotationsPerSecond(leftSetpoint.velocity / 10);
+    double rightDriveRotationsPerSecond = Conversions.falconToRotationsPerSecond(rightSetpoint.velocity / 10);
+    mLeftFront.set(ControlMode.Position, leftSetpoint.position, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt));
+    mRightFront.set(ControlMode.Position, rightSetpoint.position, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt));
+
+    mPrevTime = curTime;
+    mPrevLeftDriveRotationsPerSecond = leftDriveRotationsPerSecond;
+    mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
   }
 
   public void stopDrive() {

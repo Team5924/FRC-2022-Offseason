@@ -31,6 +31,10 @@ public final class DriveConstants {
     public static final double kRotateI = 0;
     public static final double kRotateD = 0;
 
+    // For robot rotating, in falcon units per second
+    public static final double kRotateMaxSpeed = 2048;
+    public static final double kRotateMaxAccel = 2048;
+
     public static final double kTrackwidth = 0.65292;
     public static final double kWheelCircumference = Units.inchesToMeters(4.18604 * Math.PI);
     public static final double kGearboxRatio = 9.04;
