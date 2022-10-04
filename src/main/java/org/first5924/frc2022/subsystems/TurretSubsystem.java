@@ -85,15 +85,6 @@ public class TurretSubsystem extends SubsystemBase {
     mLastTime = Timer.getFPGATimestamp();
   }
 
-  public void turnDegrees(double degrees) {
-    double acceleration = (mTurretController.getSetpoint().velocity - mLastSpeed) / (Timer.getFPGATimestamp() - mLastTime);
-    double neoRotationError = getPosition() + degrees / 360 * TurretConstants.kGearRatio;
-    mTurretSpark.setVoltage(mTurretController.calculate(getPosition(), getPosition() + neoRotationError) + mTurretFeedforward.calculate(mTurretController.getSetpoint().velocity, acceleration));
-    mLastSpeed = mTurretController.getSetpoint().velocity;
-    mLastTime = Timer.getFPGATimestamp();
-    SmartDashboard.putNumber("Target Turret Speed", mTurretController.getSetpoint().velocity);
-  }
-
   public void fuckingFreeze() {
     mTurretSpark.stopMotor();
   }
