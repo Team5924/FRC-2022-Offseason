@@ -4,19 +4,29 @@
 
 package org.first5924.frc2022.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.first5924.frc2022.constants.IntakeConstants;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 public class IntakeSubsystem extends SubsystemBase {
-  private CANSparkMax mIntakeMotor = new CANSparkMax(IntakeConstants.kIntakeMotor, MotorType.kBrushless);
-  private CANSparkMax mWheelMotor = new CANSparkMax(IntakeConstants.kWheelMotor, MotorType.kBrushless);
+  private CANSparkMax mIntakeSpark = new CANSparkMax(IntakeConstants.kIntakeSparkID, MotorType.kBrushless);
+
+  // Troubleshoot variables - TEMP
+  private boolean status;
+  private boolean forward;
+  private boolean backward;
+
+
+  private PowerDistribution mPDM = new PowerDistribution(0, ModuleType.kCTRE);
+  private double totalCurrent = mPDM.getTotalCurrent();
+  private double intakeCurrent = mPDM.getCurrent(IntakeConstants.kIntakeChannel);
+
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -26,14 +36,25 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Status", status);
+    SmartDashboard.putBoolean("Forward", forward);
+    SmartDashboard.putBoolean("Backward", backward);
+
+    System.out.println(totalCurrent);
   }
 
   public void deploy(double speed) {
-    mIntakeMotor.set(speed);
+    mIntakeSpark.setVoltage(speed);
+    status = true; forward = true; backward = false;
   }
 
   public void retract(double speed) {
-    mIntakeMotor.set(-speed);
+    mIntakeSpark.setVoltage(-speed);
+    status = true; forward = false; backward = true;
+  }
 
+  public void stop() {
+    mIntakeSpark.stopMotor();
+    status = false; forward = false; backward = false;
   }
 }

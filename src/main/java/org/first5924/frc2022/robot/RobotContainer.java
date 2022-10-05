@@ -11,6 +11,7 @@ import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.RetractIntake;
+import org.first5924.frc2022.commands.intake.StopIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
@@ -35,25 +36,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // SUBSYSTEMS & COMMANDS
   private final DriveSubsystem mDrive = new DriveSubsystem();
   private final IntakeSubsystem mIntake = new IntakeSubsystem();
 
-  // Controller and Buttons
+  // CONTROLLER & BUTTONS
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
+  private final JoystickButton mButtonX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
-  // Commands
+  // SENDABLECHOOSER COMMANDS
   SendableChooser<Command> mAutoChooser = new SendableChooser<>();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
     mDrive.register();
     mIntake.register();
@@ -83,6 +82,7 @@ public class RobotContainer {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     mButtonA.whenHeld(new DeployIntake(mIntake));
     mButtonB.whenHeld(new RetractIntake(mIntake));
+    mButtonX.whenPressed(new StopIntake(mIntake));
   }
 
   /**
