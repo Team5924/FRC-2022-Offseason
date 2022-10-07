@@ -6,6 +6,10 @@ package org.first5924.frc2022.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
@@ -22,10 +26,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private boolean forward;
   private boolean backward;
 
+  private ShuffleboardTab mTab = Shuffleboard.getTab("Intake");
 
-  private PowerDistribution mPDM = new PowerDistribution(0, ModuleType.kCTRE);
-  private double totalCurrent = mPDM.getTotalCurrent();
-  private double intakeCurrent = mPDM.getCurrent(IntakeConstants.kIntakeChannel);
+  private PowerDistribution mPD = new PowerDistribution(0, ModuleType.kCTRE);
 
 
   /** Creates a new IntakeSubsystem. */
@@ -36,11 +39,7 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Status", status);
-    SmartDashboard.putBoolean("Forward", forward);
-    SmartDashboard.putBoolean("Backward", backward);
-
-    System.out.println(totalCurrent);
+    // NetworkTableEntry currentEntry = tab.add("Current", totalCurrent).withWidget(BuiltInWidgets.kGraph).getEntry()
   }
 
   public void deploy(double speed) {
