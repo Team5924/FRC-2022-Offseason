@@ -4,7 +4,7 @@
 
 package org.first5924.frc2022.robot;
 
-import org.first5924.frc2022.commands.autonomous.GyroRotate;
+import org.first5924.frc2022.commands.autonomous.RotateToDegrees;
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
@@ -70,7 +70,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mDriverA.whenPressed(new GyroRotate(90, mDrive));
+    mDriverA.whenPressed(new RotateToDegrees(90, mDrive));
   }
 
   /**

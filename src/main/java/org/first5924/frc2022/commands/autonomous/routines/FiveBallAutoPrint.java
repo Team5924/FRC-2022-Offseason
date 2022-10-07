@@ -7,12 +7,12 @@ package org.first5924.frc2022.commands.autonomous.routines;
 import com.pathplanner.lib.PathPlanner;
 
 import org.first5924.frc2022.commands.autonomous.OutputGoalPose;
+import org.first5924.frc2022.commands.autonomous.RotateToDegrees;
 import org.first5924.frc2022.constants.DriveConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -23,20 +23,17 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FiveBallAutoPrint extends SequentialCommandGroup {
-  Timer mTimer = new Timer();
-  Trajectory fiveBallA = PathPlanner.loadPath("5 Ball Auto A", 1, 1);
-  Trajectory fiveBallB = PathPlanner.loadPath("5 Ball Auto B", 1, 1);
-  Trajectory fiveBallC = PathPlanner.loadPath("5 Ball Auto C", 1, 1);
-  Trajectory fiveBallD = PathPlanner.loadPath("5 Ball Auto D", 1, 1, true);
+  Trajectory fiveBallA = PathPlanner.loadPath("5 Ball Auto A", 2.5, 1.5);
+  Trajectory fiveBallB = PathPlanner.loadPath("5 Ball Auto B", 2.5, 1.5);
+  Trajectory fiveBallC = PathPlanner.loadPath("5 Ball Auto C", 2.5, 1.5);
+  Trajectory fiveBallD = PathPlanner.loadPath("5 Ball Auto D", 2.5, 1.5, true);
 
   /** Creates a new FiveBallAuto. */
   public FiveBallAutoPrint(DriveSubsystem driveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new InstantCommand(() -> {
-        driveSubsystem.setOdometryToPose(fiveBallA.getInitialPose());
-      }),
+      new InstantCommand(() -> driveSubsystem.setOdometryToPose(fiveBallA.getInitialPose())),
       new ParallelDeadlineGroup(
         new RamseteCommand(
           fiveBallA,
@@ -48,6 +45,7 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
         new OutputGoalPose(fiveBallA)),
       new InstantCommand(driveSubsystem::stopDrive),
       new WaitCommand(1),
+      new RotateToDegrees(153.39, driveSubsystem),
       new ParallelDeadlineGroup(
         new RamseteCommand(
           fiveBallB,

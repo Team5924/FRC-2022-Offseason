@@ -20,13 +20,11 @@ import org.first5924.lib.util.JoystickToOutput;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -51,7 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
 
-  private final TrapezoidProfile.Constraints mRotationTrapezoidProfileConstraints = new TrapezoidProfile.Constraints(DriveConstants.kRotateMaxSpeed, DriveConstants.kRotateMaxAccel);
+  private final PIDController mRotationController = new PIDController(DriveConstants.kRotateP, DriveConstants.kRotateI, DriveConstants.kRotateD);
 
   private double mPrevLeftDriveRotationsPerSecond = 0;
   private double mPrevRightDriveRotationsPerSecond = 0;
@@ -70,11 +68,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     mOdometry = new DifferentialDriveOdometry(getOffsetRotation2d());
 
+    mLeftFront.enableVoltageCompensation(false);
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
     mLeftFront.setInverted(TalonFXInvertType.CounterClockwise);
     mLeftFront.config_kP(0, DriveConstants.kP);
 
+    mRightFront.enableVoltageCompensation(false);
     mRightFront.configNeutralDeadband(0.001);
     mRightFront.setNeutralMode(NeutralMode.Brake);
     mRightFront.setInverted(TalonFXInvertType.Clockwise);
@@ -87,6 +87,8 @@ public class DriveSubsystem extends SubsystemBase {
     mRightBack.setInverted(TalonFXInvertType.FollowMaster);
 
     mLeftCANCoder.configSensorDirection(true);
+
+    mRotationController.setTolerance(1, 1);
   }
 
   @Override
@@ -102,6 +104,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Odometry X", mOdometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
+
+    SmartDashboard.putNumber("Rotation Setpoint", 90);
+    SmartDashboard.putBoolean("Rotation at Setpoint?", isRotationAtSetpoint());
 
     mOdometry.update(getOffsetRotation2d(), Conversions.degreesToMeters(getLeftWheelPosition(), DriveConstants.kWheelCircumference), Conversions.degreesToMeters(getRightWheelPosition(), DriveConstants.kWheelCircumference));
   }
@@ -234,27 +239,16 @@ public class DriveSubsystem extends SubsystemBase {
     mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
   }
 
-  public void gyroRotate(double degrees) {
-    double curTime = mTimer.get();
-    double dt = curTime - mPrevTime;
+  public void rotateToDegrees(double degrees) {
+    double voltage = MathUtil.clamp(mRotationController.calculate(getOffsetRotation2d().getDegrees(), degrees), -6.5, 6.5);
+    mRightFront.setVoltage(voltage);
+    mLeftFront.setVoltage(-voltage);
+    SmartDashboard.putNumber("Rotation Voltage", voltage);
+    SmartDashboard.putNumber("Rotation Error", degrees - getOffsetRotation2d().getDegrees());
+  }
 
-    double goalRotationError = degrees - getOffsetRotation2d().getDegrees();
-    double goalMetersError = (goalRotationError / 360) * 2 * Math.PI * (DriveConstants.kTrackwidth / 2);
-    double goalFalconError = Conversions.metersToFalconUnits(goalMetersError, DriveConstants.kWheelCircumference) * DriveConstants.kGearboxRatio;
-    TrapezoidProfile leftRotationTrapezoidProfile = new TrapezoidProfile(mRotationTrapezoidProfileConstraints, new TrapezoidProfile.State(getLeftFalconPosition() - goalFalconError, 0), new TrapezoidProfile.State(getLeftFalconPosition(), getLeftFalconVelocity()));
-    TrapezoidProfile rightRotationTrapezoidProfile = new TrapezoidProfile(mRotationTrapezoidProfileConstraints, new TrapezoidProfile.State(getRightFalconPosition() + goalFalconError, 0), new TrapezoidProfile.State(getRightFalconPosition(), getRightFalconVelocity()));
-    // 0.02 is the how frequently the command execute method runs
-    TrapezoidProfile.State leftSetpoint = leftRotationTrapezoidProfile.calculate(0.02);
-    TrapezoidProfile.State rightSetpoint = rightRotationTrapezoidProfile.calculate(0.02);
-    // Divide setpoint velocity by 10 so it's per 100ms
-    double leftDriveRotationsPerSecond = Conversions.falconToRotationsPerSecond(leftSetpoint.velocity / 10);
-    double rightDriveRotationsPerSecond = Conversions.falconToRotationsPerSecond(rightSetpoint.velocity / 10);
-    mLeftFront.set(ControlMode.Position, leftSetpoint.position, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt));
-    mRightFront.set(ControlMode.Position, rightSetpoint.position, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt));
-
-    mPrevTime = curTime;
-    mPrevLeftDriveRotationsPerSecond = leftDriveRotationsPerSecond;
-    mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
+  public boolean isRotationAtSetpoint() {
+    return mRotationController.atSetpoint();
   }
 
   public void stopDrive() {
