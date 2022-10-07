@@ -45,7 +45,9 @@ public class FiveBallAutoPrint extends SequentialCommandGroup {
         new OutputGoalPose(fiveBallA)),
       new InstantCommand(driveSubsystem::stopDrive),
       new WaitCommand(1),
-      new RotateToDegrees(153.39, driveSubsystem),
+      new RotateToDegrees(-212, driveSubsystem),
+      new InstantCommand(() -> driveSubsystem.setOdometryToPose(fiveBallB.getInitialPose())),
+      new WaitCommand(1),
       new ParallelDeadlineGroup(
         new RamseteCommand(
           fiveBallB,
