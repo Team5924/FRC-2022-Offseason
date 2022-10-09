@@ -6,53 +6,84 @@ package org.first5924.frc2022.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.first5924.frc2022.constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private WPI_TalonFX mIntakeTalon = new WPI_TalonFX(IntakeConstants.kIntakeTalon);
+  private WPI_TalonFX mIntakeMotor = new WPI_TalonFX(IntakeConstants.kIntakeTalon);
 
   // Troubleshoot variables - TEMP
   private boolean status;
-  private boolean forward;
-  private boolean backward;
+  private boolean deployed;
+  private boolean retracted;
+  private boolean clearance;
+
   private double intakeCurrent;
 
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    config.supplyCurrLimit.enable = true;
-    config.supplyCurrLimit.triggerThresholdCurrent = 40;
-    config.supplyCurrLimit.currentLimit = 30;
-    mIntakeTalon.configAllSettings(config);
+    mIntakeMotor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    intakeCurrent = mIntakeTalon.getStatorCurrent();
+    intakeCurrent = mIntakeMotor.getStatorCurrent();
+    clearance();
 
     SmartDashboard.putBoolean("Status", status);
-    SmartDashboard.putBoolean("Forward", forward);
-    SmartDashboard.putBoolean("Backward", backward);
-    SmartDashboard.putNumber("Intake Current", intakeCurrent);
+    SmartDashboard.putBoolean("Forward", deployed);
+    SmartDashboard.putBoolean("Backward", retracted);
+    SmartDashboard.putBoolean("Clearance", clearance);
+    System.out.println(intakeCurrent);
+  }
+
+  /**
+   * "clearance()" returns true when intake is NOT fully deployed/retracted
+   */
+  public void clearance() {
+    // If current spikes to >=5, stop.
+    if (intakeCurrent >= 5) {
+      clearance = false;
+    }
   }
 
   public void deploy(double volts) {
-    mIntakeTalon.setVoltage(volts);
-    status = true; forward = true; backward = false;
+    if (clearance && !deployed) {
+      mIntakeMotor.setVoltage(volts);
+      status = true;
+    } else {
+      deployed = true; retracted = false;
+      stop();
+      flutterBreak();
+    }
   }
 
   public void retract(double volts) {
-    mIntakeTalon.setVoltage(volts);
-    status = true; forward = false; backward = true;
+    if (clearance && !retracted) {
+      mIntakeMotor.setVoltage(-volts);
+      status = true;
+    } else {
+      deployed = false; retracted = true;
+      stop();
+      flutterBreak();
+    }
   }
 
   public void stop() {
-    mIntakeTalon.stopMotor();
-    status = false; forward = false; backward = false;
+    mIntakeMotor.stopMotor();
+    status = false;
+  }
+
+  public void flutterBreak() {
+    clearance = true;
+    mIntakeMotor.setVoltage(0.8);
+    mIntakeMotor.stopMotor();
   }
 }

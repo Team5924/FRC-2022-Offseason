@@ -9,12 +9,12 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class RetractIntake extends CommandBase {
-  private final IntakeSubsystem mIntakeSubsystem;
+  private final IntakeSubsystem mIntake;
 
   /** Creates a new RetractIntake. */
   public RetractIntake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    mIntakeSubsystem = intakeSubsystem;
+    mIntake = intakeSubsystem;
     addRequirements(intakeSubsystem);
   }
 
@@ -25,7 +25,7 @@ public class RetractIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mIntakeSubsystem.retract(0.8);
+    mIntake.retract(1);
   }
 
   // Called once the command ends or is interrupted.
