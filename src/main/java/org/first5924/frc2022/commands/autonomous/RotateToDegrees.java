@@ -4,9 +4,8 @@
 
 package org.first5924.frc2022.commands.autonomous;
 
-import org.first5924.frc2022.subsystems.DriveSubsystem;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import org.first5924.frc2022.subsystems.DriveSubsystem;
 
 public class RotateToDegrees extends CommandBase {
   private final double mDegrees;
@@ -27,7 +26,7 @@ public class RotateToDegrees extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mDrive.rotateToDegrees(mDegrees);
+    mDrive.rotateToDegrees(mDegrees, 4.5);
   }
 
   // Called once the command ends or is interrupted.

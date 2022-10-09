@@ -11,13 +11,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
-
-import org.first5924.frc2022.constants.DriveConstants;
-import org.first5924.frc2022.constants.RobotConstants;
-import org.first5924.lib.drivers.TalonFXFactory;
-import org.first5924.lib.util.Conversions;
-import org.first5924.lib.util.JoystickToOutput;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -31,6 +24,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.first5924.frc2022.constants.DriveConstants;
+import org.first5924.frc2022.constants.RobotConstants;
+import org.first5924.lib.drivers.TalonFXFactory;
+import org.first5924.lib.util.Conversions;
+import org.first5924.lib.util.JoystickToOutput;
 
 public class DriveSubsystem extends SubsystemBase {
   private AHRS mAhrs;
@@ -239,8 +237,8 @@ public class DriveSubsystem extends SubsystemBase {
     mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
   }
 
-  public void rotateToDegrees(double degrees) {
-    double voltage = MathUtil.clamp(mRotationController.calculate(getOffsetRotation2d().getDegrees(), degrees), -6.5, 6.5);
+  public void rotateToDegrees(double degrees, double maxOutput) {
+    double voltage = MathUtil.clamp(mRotationController.calculate(getOffsetRotation2d().getDegrees(), degrees), -maxOutput, maxOutput);
     mRightFront.setVoltage(voltage);
     mLeftFront.setVoltage(-voltage);
     SmartDashboard.putNumber("Rotation Voltage", voltage);
