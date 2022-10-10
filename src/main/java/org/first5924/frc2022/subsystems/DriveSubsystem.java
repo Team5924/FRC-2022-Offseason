@@ -11,13 +11,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
-
-import org.first5924.frc2022.constants.DriveConstants;
-import org.first5924.frc2022.constants.RobotConstants;
-import org.first5924.lib.drivers.TalonFXFactory;
-import org.first5924.lib.util.Conversions;
-
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,6 +24,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.first5924.frc2022.constants.DriveConstants;
+import org.first5924.frc2022.constants.RobotConstants;
+import org.first5924.lib.drivers.TalonFXFactory;
+import org.first5924.lib.util.Conversions;
+import org.first5924.lib.util.JoystickToOutput;
 
 public class DriveSubsystem extends SubsystemBase {
   private AHRS mAhrs;
@@ -47,6 +47,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry mOdometry;
   private final SimpleMotorFeedforward mDriveFeedforward = new SimpleMotorFeedforward(DriveConstants.ks, DriveConstants.kv, DriveConstants.ka);
 
+  private final PIDController mRotationController = new PIDController(DriveConstants.kRotateP, DriveConstants.kRotateI, DriveConstants.kRotateD);
+
   private double mPrevLeftDriveRotationsPerSecond = 0;
   private double mPrevRightDriveRotationsPerSecond = 0;
 
@@ -64,11 +66,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     mOdometry = new DifferentialDriveOdometry(getOffsetRotation2d());
 
+    mLeftFront.enableVoltageCompensation(false);
     mLeftFront.configNeutralDeadband(0.001);
     mLeftFront.setNeutralMode(NeutralMode.Brake);
     mLeftFront.setInverted(TalonFXInvertType.CounterClockwise);
     mLeftFront.config_kP(0, DriveConstants.kP);
 
+    mRightFront.enableVoltageCompensation(false);
     mRightFront.configNeutralDeadband(0.001);
     mRightFront.setNeutralMode(NeutralMode.Brake);
     mRightFront.setInverted(TalonFXInvertType.Clockwise);
@@ -79,34 +83,45 @@ public class DriveSubsystem extends SubsystemBase {
 
     mRightBack.follow(mRightFront);
     mRightBack.setInverted(TalonFXInvertType.FollowMaster);
+
+    mLeftCANCoder.configSensorDirection(true);
+
+    mRotationController.setTolerance(1, 1);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Gyro Angle", getOffsetRotation2d().getDegrees());
-    SmartDashboard.putNumber("Left Drive Encoder", getLeftPosition());
-    SmartDashboard.putNumber("Right Drive Encoder", getRightPosition());
+    SmartDashboard.putNumber("Left CANCoder", mLeftCANCoder.getPosition());
+    SmartDashboard.putNumber("Right CANCoder", mRightCANCoder.getPosition());
+    SmartDashboard.putNumber("Left CANCoder Velo", getLeftWheelVelocity());
+    SmartDashboard.putNumber("Right CANCoder Velo", getRightWheelVelocity());
+    SmartDashboard.putNumber("Left Falcon Velo", getLeftFalconVelocity());
+    SmartDashboard.putNumber("Right Falcon Velo", getRightFalconVelocity());
 
     SmartDashboard.putNumber("Odometry X", mOdometry.getPoseMeters().getX());
     SmartDashboard.putNumber("Odometry Y", mOdometry.getPoseMeters().getY());
     SmartDashboard.putNumber("Odometry Rotation", mOdometry.getPoseMeters().getRotation().getDegrees());
 
+    SmartDashboard.putNumber("Rotation Setpoint", 90);
+    SmartDashboard.putBoolean("Rotation at Setpoint?", isRotationAtSetpoint());
+
     mOdometry.update(getOffsetRotation2d(), Conversions.degreesToMeters(getLeftWheelPosition(), DriveConstants.kWheelCircumference), Conversions.degreesToMeters(getRightWheelPosition(), DriveConstants.kWheelCircumference));
   }
 
-  public double getLeftVelocity() {
+  public double getLeftFalconVelocity() {
     return mLeftFront.getSelectedSensorVelocity();
   }
 
-  public double getRightVelocity() {
+  public double getRightFalconVelocity() {
     return mRightFront.getSelectedSensorVelocity();
   }
 
-  public double getLeftPosition() {
+  public double getLeftFalconPosition() {
     return mLeftFront.getSelectedSensorPosition();
   }
 
-  public double getRightPosition() {
+  public double getRightFalconPosition() {
     return mRightFront.getSelectedSensorPosition();
   }
 
@@ -148,21 +163,10 @@ public class DriveSubsystem extends SubsystemBase {
     mOdometry.resetPosition(pose, getOffsetRotation2d());
   }
 
-  // https://www.desmos.com/calculator/4dkyeczdx6
-  private double joystickToOutput(double joystick, double deadzone, double maxOutput) {
-    if (joystick < -deadzone) {
-      return maxOutput / (1 - deadzone) * (joystick + deadzone);
-    } else if (joystick > deadzone) {
-      return maxOutput / (1 - deadzone) * (joystick - deadzone);
-    } else {
-      return 0;
-    }
-  }
-
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void curvatureDrive(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = joystickToOutput(-leftJoystickY, 0.08, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
+    double xSpeed = JoystickToOutput.calculateLinear(-leftJoystickY, 0.08, 0.8);
+    double zRotation = JoystickToOutput.calculateLinear(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + (Math.abs(xSpeed) * zRotation);
     double rightSpeedPercent = xSpeed - (Math.abs(xSpeed) * zRotation);
@@ -179,8 +183,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Parts of this method taken from WPILib's DifferentialDrive class
   public void turnInPlace(double leftJoystickY, double rightJoystickX) {
-    double xSpeed = -joystickToOutput(leftJoystickY, 0.08, 0.8);
-    double zRotation = joystickToOutput(rightJoystickX, 0.08, 0.65);
+    double xSpeed = -JoystickToOutput.calculateLinear(leftJoystickY, 0.08, 0.8);
+    double zRotation = JoystickToOutput.calculateLinear(rightJoystickX, 0.08, 0.65);
 
     double leftSpeedPercent = xSpeed + zRotation;
     double rightSpeedPercent = xSpeed - zRotation;
@@ -195,11 +199,6 @@ public class DriveSubsystem extends SubsystemBase {
     drivePercent(leftSpeedPercent, rightSpeedPercent);
   }
 
-  public void driveVoltage(double leftVoltage, double rightVoltage) {
-    mLeftFront.setVoltage(leftVoltage);
-    mRightFront.setVoltage(rightVoltage);
-  }
-
   public void drivePercent(double leftPercent, double rightPercent) {
     double leftMotorRPM = leftPercent * RobotConstants.kMaxFalconRPM;
     double rightMotorRPM = rightPercent * RobotConstants.kMaxFalconRPM;
@@ -211,9 +210,7 @@ public class DriveSubsystem extends SubsystemBase {
     double rightSpeedFalcon = Conversions.RPMToFalcon(rightMotorRPM);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
     mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
     mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond) / RobotConstants.kNominalVoltage, -0.8, 0.8));
@@ -230,16 +227,26 @@ public class DriveSubsystem extends SubsystemBase {
     double rightDriveRotationsPerSecond = Conversions.MPSToRotationsPerSecond(rightMPS, DriveConstants.kWheelCircumference);
 
     SmartDashboard.putNumber("Left Drive Setpoint", leftSpeedFalcon);
-    SmartDashboard.putNumber("Left Drive Velocity", getLeftVelocity());
     SmartDashboard.putNumber("Right Drive Setpoint", rightSpeedFalcon);
-    SmartDashboard.putNumber("Right Drive Velocity", getRightVelocity());
 
-    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
-    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, MathUtil.clamp(mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage, -0.8, 0.8));
+    mLeftFront.set(ControlMode.Velocity, leftSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(leftDriveRotationsPerSecond, (leftDriveRotationsPerSecond - mPrevLeftDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage);
+    mRightFront.set(ControlMode.Velocity, rightSpeedFalcon, DemandType.ArbitraryFeedForward, mDriveFeedforward.calculate(rightDriveRotationsPerSecond, (rightDriveRotationsPerSecond - mPrevRightDriveRotationsPerSecond) / dt) / RobotConstants.kNominalVoltage);
 
     mPrevTime = curTime;
     mPrevLeftDriveRotationsPerSecond = leftDriveRotationsPerSecond;
     mPrevRightDriveRotationsPerSecond = rightDriveRotationsPerSecond;
+  }
+
+  public void rotateToDegrees(double degrees, double maxOutput) {
+    double voltage = MathUtil.clamp(mRotationController.calculate(getOffsetRotation2d().getDegrees(), degrees), -maxOutput, maxOutput);
+    mRightFront.setVoltage(voltage);
+    mLeftFront.setVoltage(-voltage);
+    SmartDashboard.putNumber("Rotation Voltage", voltage);
+    SmartDashboard.putNumber("Rotation Error", degrees - getOffsetRotation2d().getDegrees());
+  }
+
+  public boolean isRotationAtSetpoint() {
+    return mRotationController.atSetpoint();
   }
 
   public void stopDrive() {
