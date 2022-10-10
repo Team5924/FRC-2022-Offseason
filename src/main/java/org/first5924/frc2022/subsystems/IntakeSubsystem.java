@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.first5924.frc2022.constants.IntakeConstants;
@@ -17,18 +15,20 @@ import org.first5924.frc2022.constants.IntakeConstants;
 public class IntakeSubsystem extends SubsystemBase {
   private WPI_TalonFX mIntakeMotor = new WPI_TalonFX(IntakeConstants.kIntakeTalon);
 
-  // Troubleshoot variables - TEMP
   private boolean runningStatus;
-  private boolean deployed;
-  private boolean retracted;
+  private Status status;
   private boolean clearance;
+
+  enum Status {
+    DEPLOYED,
+    RETRACTED
+  }
 
   private double intakeCurrent;
 
-
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
-    deployed = false; retracted = true;
+    status = Status.RETRACTED;
     mIntakeMotor.setNeutralMode(NeutralMode.Brake);
   }
 
@@ -39,11 +39,12 @@ public class IntakeSubsystem extends SubsystemBase {
     clearance();
 
     SmartDashboard.putBoolean("Running?", runningStatus);
-    SmartDashboard.putBoolean("Deployed?", deployed);
-    SmartDashboard.putBoolean("Retracted?", retracted);
     SmartDashboard.putBoolean("Clearance", clearance);
+
     System.out.println(intakeCurrent);
   }
+
+  // ===== Intake =====
 
   /**
    * "clearance()" returns false when intake is fully deployed/retracted
@@ -56,30 +57,30 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void deploy(double volts) {
-    if (clearance && !deployed) {
+    if (clearance && status == Status.RETRACTED) {
       mIntakeMotor.setVoltage(volts);
       runningStatus = true;
     }
     if (!clearance) {
-      deployed = true; retracted = false;
-      stop();
+      status = Status.DEPLOYED;
+      stopIntake();
       flutterBreak();
     }
   }
 
   public void retract(double volts) {
-    if (clearance && !retracted) {
+    if (clearance && status == Status.DEPLOYED) {
       mIntakeMotor.setVoltage(-volts);
       runningStatus = true;
     }
     if (!clearance) {
-      deployed = false; retracted = true;
+      status = Status.RETRACTED;
       mIntakeMotor.setNeutralMode(NeutralMode.Brake);
-      stop();
+      stopIntake();
     }
   }
 
-  public void stop() {
+  public void stopIntake() {
     clearance = true; runningStatus = false;
     mIntakeMotor.stopMotor();
   }
