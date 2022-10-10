@@ -80,9 +80,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mButtonA.whenHeld(new DeployIntake(mIntake));
-    mButtonB.whenHeld(new RetractIntake(mIntake));
-    mButtonX.whenPressed(new StopIntake(mIntake));
+    mButtonX.whenPressed(new DeployIntake(mIntake));
+    mButtonA.whenPressed(new RetractIntake(mIntake));
+    mButtonB.whenPressed(new StopIntake(mIntake));
   }
 
   /**
