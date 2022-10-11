@@ -40,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Intake Status", intakeStatus);
     SmartDashboard.putBoolean("Wheels Status", wheelsStatus);
     SmartDashboard.putBoolean("Deployed?", deployed);
-    SmartDashboard.putBoolean("Retracted", retracted);
+    SmartDashboard.putBoolean("Retracted?", retracted);
 
     switch (mState) {
       case DEPLOYED:
