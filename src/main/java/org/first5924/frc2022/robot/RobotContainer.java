@@ -88,7 +88,7 @@ public class RobotContainer {
     mButtonA.whenPressed(new DeployIntake(mIntake));
     mButtonB.whenPressed(new RetractIntake(mIntake));
     mButtonX.whenPressed(new Stop(mIntake));
-    mButtonY.whenHeld(new Eject(mIntake));
+    mButtonY.whileHeld(new Eject(mIntake));
   }
 
   /**
