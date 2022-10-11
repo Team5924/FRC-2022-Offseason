@@ -38,11 +38,13 @@ public class TurretTrackTarget extends CommandBase {
         } else {
           mTurret.setState(TurretState.WAITING);
         }
+        break;
       case WAITING:
         mTurret.turnTurretToDegrees(0);
         if (mLimelight.isTargetDetected()) {
           mTurret.setState(TurretState.TRACKING);
         }
+        break;
     }
   }
 
