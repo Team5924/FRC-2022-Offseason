@@ -16,6 +16,6 @@ public class TurretConstants {
     public static final double kP = 0.014;
     public static final double kI = 0;
     public static final double kD = 0.00033;
-    public static final double kPositionTolerance = 5;
+    public static final double kPositionTolerance = 15;
     public static final double kVelocityTolerance = 5;
 }
