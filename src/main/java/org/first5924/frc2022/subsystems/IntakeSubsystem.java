@@ -12,82 +12,46 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.first5924.frc2022.constants.IntakeConstants;
 
+import org.first5924.frc2022.states.IntakeState;
+
 public class IntakeSubsystem extends SubsystemBase {
   private WPI_TalonFX mIntakeMotor = new WPI_TalonFX(IntakeConstants.kIntakeTalon);
-
-  private boolean runningStatus;
-  private Status status;
-  private boolean clearance;
-
-  enum Status {
-    DEPLOYED,
-    RETRACTED
-  }
-
-  private double intakeCurrent;
+  private IntakeState mState;
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
-    status = Status.RETRACTED;
     mIntakeMotor.setNeutralMode(NeutralMode.Brake);
+    mState = IntakeState.RETRACTED;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    intakeCurrent = mIntakeMotor.getStatorCurrent();
-    clearance();
-
-    SmartDashboard.putBoolean("Running?", runningStatus);
-    SmartDashboard.putBoolean("Clearance", clearance);
-
-    System.out.println(intakeCurrent);
   }
 
   // ===== Intake =====
 
-  /**
-   * "clearance()" returns false when intake is fully deployed/retracted
-   */
-  public void clearance() {
-    // If current spikes to >=5, the intake has reached the physical limit; stop.
-    if (intakeCurrent >= 5) {
-      clearance = false;
-    }
+  public double getCurrent() {
+    return mIntakeMotor.getStatorCurrent();
   }
 
-  public void deploy(double volts) {
-    if (clearance && status == Status.RETRACTED) {
-      mIntakeMotor.setVoltage(volts);
-      runningStatus = true;
-    }
-    if (!clearance) {
-      status = Status.DEPLOYED;
-      stopIntake();
-      flutterBreak();
-    }
+  public IntakeState getState() {
+    return mState;
   }
 
-  public void retract(double volts) {
-    if (clearance && status == Status.DEPLOYED) {
-      mIntakeMotor.setVoltage(-volts);
-      runningStatus = true;
-    }
-    if (!clearance) {
-      status = Status.RETRACTED;
-      mIntakeMotor.setNeutralMode(NeutralMode.Brake);
-      stopIntake();
-    }
+  public void setState(IntakeState state) {
+    mState = state;
+  }
+
+  public void runIntakeMotor(double volts) {
+    mIntakeMotor.set(volts);
   }
 
   public void stopIntake() {
-    clearance = true; runningStatus = false;
     mIntakeMotor.stopMotor();
   }
 
   public void flutterBreak() {
-    clearance = true; runningStatus = false;
-    mIntakeMotor.setNeutralMode(NeutralMode.Coast);
     mIntakeMotor.setVoltage(0.8);
     mIntakeMotor.stopMotor();
   }

@@ -15,7 +15,7 @@ public class RetractIntake extends CommandBase {
   public RetractIntake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     mIntake = intakeSubsystem;
-    addRequirements(intakeSubsystem);
+    addRequirements(mIntake);
   }
 
   // Called when the command is initially scheduled.
@@ -24,9 +24,7 @@ public class RetractIntake extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    mIntake.retract(1);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

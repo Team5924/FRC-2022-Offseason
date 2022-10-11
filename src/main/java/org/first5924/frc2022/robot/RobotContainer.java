@@ -9,9 +9,6 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
-import org.first5924.frc2022.commands.intake.DeployIntake;
-import org.first5924.frc2022.commands.intake.RetractIntake;
-import org.first5924.frc2022.commands.intake.StopIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
@@ -80,9 +77,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mButtonX.whenPressed(new DeployIntake(mIntake));
-    mButtonA.whenPressed(new RetractIntake(mIntake));
-    mButtonB.whenPressed(new StopIntake(mIntake));
   }
 
   /**
