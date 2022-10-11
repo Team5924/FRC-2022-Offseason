@@ -79,10 +79,11 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mDriverB.whileHeld(new InstantCommand(() -> mTurret.turnToDegrees(90)));
-    mDriverB.whenReleased(new InstantCommand((mTurret::fuckingFreeze)));
-    mDriverA.whenPressed(new InstantCommand(mTurret::zeroTurret));
-    mDriverX.whileHeld(new InstantCommand(() -> mTurret.setVoltage(2)));
+    mDriverB.whileHeld(new InstantCommand(() -> mTurret.setVoltage(1)));
+    mDriverB.whenReleased(new InstantCommand((() -> mTurret.setVoltage(0))));
+    mDriverA.whileHeld(new InstantCommand(() -> mTurret.setVoltage(-1)));
+    mDriverA.whenReleased(new InstantCommand(() -> mTurret.setVoltage(0)));
+    mDriverX.whenPressed(new InstantCommand(mTurret::zeroTurret));
   }
 
   /**

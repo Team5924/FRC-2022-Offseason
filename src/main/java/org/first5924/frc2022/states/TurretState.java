@@ -7,6 +7,5 @@ package org.first5924.frc2022.states;
 /** Add your docs here. */
 public enum TurretState {
     TRACKING,
-    SEARCHING_LEFT,
-    SEARCHING_RIGHT
+    WAITING
 }

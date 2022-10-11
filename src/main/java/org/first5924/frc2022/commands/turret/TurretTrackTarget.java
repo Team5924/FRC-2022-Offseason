@@ -4,6 +4,7 @@
 
 package org.first5924.frc2022.commands.turret;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.first5924.frc2022.constants.TurretConstants;
 import org.first5924.frc2022.states.TurretState;
@@ -32,34 +33,15 @@ public class TurretTrackTarget extends CommandBase {
     switch(mTurret.getState()) {
       case TRACKING:
         if (mLimelight.isTargetDetected()) {
-          double angle = mTurret.getTurretPosition() + mLimelight.getCrosshairHorizontalOffset();
-          if (angle > TurretConstants.kRangeOfMotion / 2) {
-            mTurret.setState(TurretState.SEARCHING_LEFT);
-          } else if (angle < -TurretConstants.kRangeOfMotion / 2) {
-            mTurret.setState(TurretState.SEARCHING_RIGHT);
-          } else {
-            mTurret.turnToDegrees(angle);
-          }
-        } else if (mTurret.getTurretPosition() >= 0) {
-          mTurret.setState(TurretState.SEARCHING_RIGHT);
+          double angle = mTurret.getTurretPosition() - mLimelight.getCrosshairHorizontalOffset();
+          mTurret.turnTurretToDegrees(angle);
         } else {
-          mTurret.setState(TurretState.SEARCHING_LEFT);
+          mTurret.setState(TurretState.WAITING);
         }
-      case SEARCHING_RIGHT:
-        mTurret.turnToDegrees(TurretConstants.kRangeOfMotion / 2);
+      case WAITING:
+        mTurret.turnTurretToDegrees(0);
         if (mLimelight.isTargetDetected()) {
-          double angle = mTurret.getTurretPosition() * 360 + mLimelight.getCrosshairHorizontalOffset();
-          if (angle >= -TurretConstants.kRangeOfMotion / 2 && angle <= TurretConstants.kRangeOfMotion / 2) {
-            mTurret.setState(TurretState.TRACKING);
-          }
-        }
-      case SEARCHING_LEFT:
-        mTurret.turnToDegrees(-TurretConstants.kRangeOfMotion / 2);
-        if (mLimelight.isTargetDetected()) {
-          double angle = mTurret.getTurretPosition() * 360 + mLimelight.getCrosshairHorizontalOffset();
-          if (angle >= -TurretConstants.kRangeOfMotion / 2 && angle <= TurretConstants.kRangeOfMotion / 2) {
-            mTurret.setState(TurretState.TRACKING);
-          }
+          mTurret.setState(TurretState.TRACKING);
         }
     }
   }
