@@ -5,20 +5,18 @@
 package org.first5924.frc2022.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import org.first5924.frc2022.constants.RobotConstants;
-import org.first5924.frc2022.constants.TurretConstants;
-import org.first5924.frc2022.states.TurretState;
-
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.first5924.frc2022.constants.RobotConstants;
+import org.first5924.frc2022.constants.TurretConstants;
+import org.first5924.frc2022.states.TurretState;
 
 public class TurretSubsystem extends SubsystemBase {
   private final CANSparkMax mTurretSpark = new CANSparkMax(TurretConstants.kSparkPort, MotorType.kBrushless);
@@ -45,6 +43,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Turret Velo", getVelocity());
     SmartDashboard.putNumber("Turret Pos", getPosition());
+    SmartDashboard.putString("State", getState().toString());
   }
 
   public TurretState getState() {

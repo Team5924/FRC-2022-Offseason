@@ -4,12 +4,11 @@
 
 package org.first5924.frc2022.commands.turret;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.first5924.frc2022.constants.TurretConstants;
 import org.first5924.frc2022.states.TurretState;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.TurretSubsystem;
-
-import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class TurretTrackTarget extends CommandBase {
   private final TurretSubsystem mTurret;
@@ -33,13 +32,13 @@ public class TurretTrackTarget extends CommandBase {
     switch(mTurret.getState()) {
       case TRACKING:
         if (mLimelight.isTargetDetected()) {
-          double angle = mTurret.getTurretPosition() * 360 + mLimelight.getCrosshairHorizontalOffset();
+          double angle = mTurret.getTurretPosition() + mLimelight.getCrosshairHorizontalOffset();
           if (angle > TurretConstants.kRangeOfMotion / 2) {
             mTurret.setState(TurretState.SEARCHING_LEFT);
           } else if (angle < -TurretConstants.kRangeOfMotion / 2) {
             mTurret.setState(TurretState.SEARCHING_RIGHT);
           } else {
-            //mTurret.turnDegrees(mLimelight.getCrosshairHorizontalOffset());
+            mTurret.turnToDegrees(angle);
           }
         } else if (mTurret.getTurretPosition() >= 0) {
           mTurret.setState(TurretState.SEARCHING_RIGHT);

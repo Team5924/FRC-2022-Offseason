@@ -5,6 +5,7 @@
 package org.first5924.frc2022.subsystems;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LimelightSubsystem extends SubsystemBase {
@@ -14,6 +15,8 @@ public class LimelightSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Target Detected?", isTargetDetected());
+    SmartDashboard.putNumber("Crosshair Horizontal Offset", getCrosshairHorizontalOffset());
   }
 
   public boolean isTargetDetected() {

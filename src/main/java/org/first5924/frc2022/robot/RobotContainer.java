@@ -4,22 +4,23 @@
 
 package org.first5924.frc2022.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
+import org.first5924.frc2022.commands.turret.TurretTrackTarget;
 import org.first5924.frc2022.constants.OIConstants;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
+import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.TurretSubsystem;
-
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,6 +35,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem mDrive = new DriveSubsystem();
   private final TurretSubsystem mTurret = new TurretSubsystem();
+  private final LimelightSubsystem mLimelight = new LimelightSubsystem();
 
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
@@ -51,8 +53,11 @@ public class RobotContainer {
    */
   public RobotContainer() {
     mDrive.register();
+    mTurret.register();
+    mLimelight.register();
 
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
     //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
 
     // Configure the button bindings
