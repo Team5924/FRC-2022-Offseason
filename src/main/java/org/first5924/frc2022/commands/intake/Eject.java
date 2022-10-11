@@ -8,26 +8,33 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class StopIntake extends CommandBase {
+public class Eject extends CommandBase {
   private final IntakeSubsystem mIntake;
 
-  /** Creates a new StopIntake. */
-  public StopIntake(IntakeSubsystem intakeSubsystem) {
+  /** Creates a new Eject. */
+  public Eject(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-
     mIntake = intakeSubsystem;
     addRequirements(mIntake);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    mIntake.stopIntake();
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    switch (mIntake.getState()) {
+      case DEPLOYED:
+        // Running the Eject command interrupts the default flutter command
+        mIntake.flutterBreak();
+        mIntake.runIntakeWheels(-1);
+        break;
+      default:
+        break;
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override

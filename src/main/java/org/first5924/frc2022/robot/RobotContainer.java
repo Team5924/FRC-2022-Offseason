@@ -9,7 +9,11 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
-
+import org.first5924.frc2022.commands.intake.DeployIntake;
+import org.first5924.frc2022.commands.intake.Eject;
+import org.first5924.frc2022.commands.intake.Intake;
+import org.first5924.frc2022.commands.intake.RetractIntake;
+import org.first5924.frc2022.commands.intake.Stop;
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
@@ -20,6 +24,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import pabeles.concurrency.IntOperatorTask.Min;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -44,6 +49,7 @@ public class RobotContainer {
   private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mButtonX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
+  private final JoystickButton mButtonY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
@@ -54,8 +60,9 @@ public class RobotContainer {
     mDrive.register();
     mIntake.register();
 
+    // Default Commmands
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
+    mIntake.setDefaultCommand(new Intake(mIntake));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -77,6 +84,11 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+
+    mButtonA.whenPressed(new DeployIntake(mIntake));
+    mButtonB.whenPressed(new RetractIntake(mIntake));
+    mButtonX.whenPressed(new Stop(mIntake));
+    mButtonY.whenHeld(new Eject(mIntake));
   }
 
   /**

@@ -4,16 +4,15 @@
 
 package org.first5924.frc2022.commands.intake;
 
-import org.first5924.frc2022.states.IntakeState;
 import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class RetractIntake extends CommandBase {
+public class Intake extends CommandBase {
   private final IntakeSubsystem mIntake;
 
-  /** Creates a new RetractIntake. */
-  public RetractIntake(IntakeSubsystem intakeSubsystem) {
+  /** Creates a new FlutterIntake. */
+  public Intake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     mIntake = intakeSubsystem;
     addRequirements(mIntake);
@@ -26,9 +25,11 @@ public class RetractIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Intake flutters and intakes by default
     switch (mIntake.getState()) {
       case DEPLOYED:
-        mIntake.runIntakeMotor(-1);
+        mIntake.flutterBreak();
+        mIntake.runIntakeWheels(1);
         break;
       default:
         break;
@@ -37,17 +38,11 @@ public class RetractIntake extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    mIntake.setState(IntakeState.RETRACTED);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (mIntake.getCurrent() >= 5) {
-      return true;
-    } else {
-      return false;
-    }
+    return false;
   }
 }

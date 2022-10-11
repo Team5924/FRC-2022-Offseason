@@ -27,8 +27,12 @@ public class DeployIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (mIntake.getState() == IntakeState.RETRACTED) {
-      mIntake.runIntakeMotor(1);
+    switch (mIntake.getState()) {
+      case RETRACTED:
+        mIntake.runIntakeMotor(1);
+        break;
+      default:
+        break;
     }
   }
 
@@ -41,6 +45,7 @@ public class DeployIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // Kill intake when current spikes past 5 or more amps
     if (mIntake.getCurrent() >= 5) {
       return true;
     } else {
