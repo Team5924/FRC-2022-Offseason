@@ -4,9 +4,7 @@
 
 package org.first5924.frc2022.commands.turret;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.first5924.frc2022.constants.TurretConstants;
 import org.first5924.frc2022.states.TurretState;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.TurretSubsystem;
