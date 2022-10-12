@@ -4,8 +4,6 @@
 
 package org.first5924.frc2022.commands.intake;
 
-import javax.sound.midi.MidiChannel;
-
 import org.first5924.frc2022.states.IntakeState;
 import org.first5924.frc2022.subsystems.IntakeSubsystem;
 

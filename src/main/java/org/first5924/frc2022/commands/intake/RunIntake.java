@@ -19,7 +19,7 @@ public class RunIntake extends CommandBase {
   private final Timer timer = new Timer();
   private final double delay = 0.5;
 
-  /** Creates a new FlutterIntake. */
+  /** Creates a new RunIntake. */
   public RunIntake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     mIntake = intakeSubsystem;
