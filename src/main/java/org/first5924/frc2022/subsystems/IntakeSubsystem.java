@@ -34,13 +34,11 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putString("Intake State?", getState().toString());
-    SmartDashboard.putNumber("Current", getCurrent());
+    SmartDashboard.putNumber("Current", getIntakeCurrent());
   }
 
-  // ===== Intake =====
-
-  public double getCurrent() {
-    return mIntakeMotor.getStatorCurrent();
+  public void setNeutralMode(NeutralMode mode) {
+    mIntakeMotor.setNeutralMode(mode);
   }
 
   public IntakeState getState() {
@@ -51,7 +49,9 @@ public class IntakeSubsystem extends SubsystemBase {
     mState = state;
   }
 
-  public void runIntakeMotor(double volts) {
+  // ===== Intake =====
+
+  public void runIntake(double volts) {
     mIntakeMotor.setVoltage(volts);
   }
 
@@ -59,13 +59,13 @@ public class IntakeSubsystem extends SubsystemBase {
     mIntakeMotor.stopMotor();
   }
 
-  public void setNeutralMode(NeutralMode mode) {
-    mIntakeMotor.setNeutralMode(mode);
+  public double getIntakeCurrent() {
+    return mIntakeMotor.getStatorCurrent();
   }
 
   // ===== Wheels =====
 
-  public void runIntakeWheels(double speed) {
+  public void runWheels(double speed) {
     mIntakeWheels.set(-speed);
   }
 

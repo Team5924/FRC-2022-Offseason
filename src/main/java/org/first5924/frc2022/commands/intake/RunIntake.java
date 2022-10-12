@@ -36,7 +36,7 @@ public class RunIntake extends CommandBase {
   public void execute() {
     switch (mIntake.getState()) {
       case DEPLOYED:
-        mIntake.runIntakeMotor(0.75);
+        mIntake.runIntake(0.75);
         timer.start();
         if (timer.hasElapsed(delay)) {
           mIntake.stopIntake();
@@ -47,7 +47,7 @@ public class RunIntake extends CommandBase {
         break;
       case RETRACTED:
         mIntake.setNeutralMode(NeutralMode.Brake);
-        mIntake.runIntakeMotor(-0.8);
+        mIntake.runIntake(-0.8);
         timer.start();
         if (timer.hasElapsed(delay)) {
           mIntake.stopIntake();
@@ -57,20 +57,20 @@ public class RunIntake extends CommandBase {
         break;
       case DEPLOYING:
         mIntake.setNeutralMode(NeutralMode.Coast);
-        mIntake.runIntakeMotor(1.75);
+        mIntake.runIntake(1.75);
         if (mIntake.getCurrent() >= 35) {
           mIntake.setState(IntakeState.DEPLOYED);
         }
         break;
       case RETRACTING:
         mIntake.stopWheels();
-        mIntake.runIntakeMotor(-1.75);
+        mIntake.runIntake(-1.75);
         if (mIntake.getCurrent() >= 35) {
           mIntake.setState(IntakeState.RETRACTED);
         }
         break;
       case EJECTING:
-        mIntake.runIntakeWheels(-1);
+        mIntake.runWheels(-1);
         break;
     }
   }
