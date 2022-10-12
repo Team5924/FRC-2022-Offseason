@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class RunIntake extends CommandBase {
   private final IntakeSubsystem mIntake;
+
+  // For fluttering the motor on & off
   private final Timer timer = new Timer();
   private final double delay = 0.5;
 
@@ -41,7 +43,7 @@ public class RunIntake extends CommandBase {
           timer.stop();
           timer.reset();
         }
-        //mIntake.runIntakeWheels(0.65);
+        // mIntake.runIntakeWheels(0.65);
         break;
       case RETRACTED:
         mIntake.setNeutralMode(NeutralMode.Brake);
