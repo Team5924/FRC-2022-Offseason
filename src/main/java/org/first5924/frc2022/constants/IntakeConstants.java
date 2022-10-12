@@ -6,6 +6,6 @@ package org.first5924.frc2022.constants;
 
 /** Add your docs here. */
 public final class IntakeConstants {
-    public static int kIntakeTalon = 0;
-    public static int kIntakeWheels = 10;
+    public static int kIntakeTalonPort = 0;
+    public static int kIntakeWheelsTalonPort = 10;
 }

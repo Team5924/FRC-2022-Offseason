@@ -58,14 +58,14 @@ public class RunIntake extends CommandBase {
       case DEPLOYING:
         mIntake.setNeutralMode(NeutralMode.Coast);
         mIntake.runIntake(1.75);
-        if (mIntake.getCurrent() >= 35) {
+        if (mIntake.getIntakeCurrent() >= 35) {
           mIntake.setState(IntakeState.DEPLOYED);
         }
         break;
       case RETRACTING:
         mIntake.stopWheels();
         mIntake.runIntake(-1.75);
-        if (mIntake.getCurrent() >= 35) {
+        if (mIntake.getIntakeCurrent() >= 35) {
           mIntake.setState(IntakeState.RETRACTED);
         }
         break;
