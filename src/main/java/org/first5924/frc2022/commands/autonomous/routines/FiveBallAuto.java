@@ -41,7 +41,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         driveSubsystem),
       new InstantCommand(driveSubsystem::stopDrive),
       new WaitCommand(1),
-      new RotateToDegrees(-212, driveSubsystem),
+      new RotateToDegrees(-210.5, driveSubsystem),
       new InstantCommand(() -> driveSubsystem.setOdometryToPose(mFiveBallB.getInitialPose())),
       new RamseteCommand(
         mFiveBallB,
