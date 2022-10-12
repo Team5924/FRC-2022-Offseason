@@ -23,8 +23,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // Variables
   private IntakeState mState;
-  private boolean intakeStatus;
-  private boolean wheelsStatus;
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -35,8 +33,6 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Intake Status", intakeStatus);
-    SmartDashboard.putBoolean("Wheels Status", wheelsStatus);
     SmartDashboard.putString("Intake State?", getState().toString());
     SmartDashboard.putNumber("Current", getCurrent());
   }
@@ -57,12 +53,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void runIntakeMotor(double volts) {
     mIntakeMotor.setVoltage(volts);
-    intakeStatus = true;
   }
 
   public void stopIntake() {
     mIntakeMotor.stopMotor();
-    intakeStatus = false;
   }
 
   public void setNeutralMode(NeutralMode mode) {
@@ -73,11 +67,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void runIntakeWheels(double speed) {
     mIntakeWheels.set(-speed);
-    wheelsStatus = true;
   }
 
   public void stopWheels() {
     mIntakeWheels.stopMotor();
-    wheelsStatus = false;
   }
 }
