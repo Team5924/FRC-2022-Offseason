@@ -11,7 +11,7 @@ import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.Eject;
-import org.first5924.frc2022.commands.intake.Intake;
+import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.intake.RetractIntake;
 import org.first5924.frc2022.commands.intake.Stop;
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
@@ -62,7 +62,7 @@ public class RobotContainer {
 
     // Default Commmands
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mIntake.setDefaultCommand(new Intake(mIntake));
+    mIntake.setDefaultCommand(new RunIntake(mIntake));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -88,7 +88,7 @@ public class RobotContainer {
     mButtonA.whenPressed(new DeployIntake(mIntake));
     mButtonB.whenPressed(new RetractIntake(mIntake));
     mButtonX.whenPressed(new Stop(mIntake));
-    mButtonY.whileHeld(new Eject(mIntake));
+    mButtonY.whenHeld(new Eject(mIntake));
   }
 
   /**

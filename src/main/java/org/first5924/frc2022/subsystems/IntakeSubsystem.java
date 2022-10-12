@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import org.first5924.frc2022.constants.IntakeConstants;
@@ -25,8 +26,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private IntakeState mState;
   private boolean intakeStatus;
   private boolean wheelsStatus;
-  private boolean deployed;
-  private boolean retracted;
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {
@@ -39,19 +38,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Intake Status", intakeStatus);
     SmartDashboard.putBoolean("Wheels Status", wheelsStatus);
-    SmartDashboard.putBoolean("Deployed?", deployed);
-    SmartDashboard.putBoolean("Retracted?", retracted);
-
-    switch (mState) {
-      case DEPLOYED:
-        deployed = true;
-        retracted = false;
-        break;
-      case RETRACTED:
-        deployed = false;
-        retracted = true;
-        break;
-    }
+    SmartDashboard.putString("Intake State?", getState().toString());
+    SmartDashboard.putNumber("Current", getCurrent());
   }
 
   // ===== Intake =====
@@ -78,16 +66,14 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeStatus = false;
   }
 
-  public void flutterBreak() {
-    mIntakeMotor.setVoltage(0.8);
-    mIntakeMotor.stopMotor();
-    intakeStatus = false;
+  public void setNeutralMode(NeutralMode mode) {
+    mIntakeMotor.setNeutralMode(mode);
   }
 
   // ===== Wheels =====
 
   public void runIntakeWheels(double speed) {
-    mIntakeWheels.set(speed);
+    mIntakeWheels.set(-speed);
     wheelsStatus = true;
   }
 

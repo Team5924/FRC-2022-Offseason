@@ -4,50 +4,28 @@
 
 package org.first5924.frc2022.commands.intake;
 
+import javax.sound.midi.MidiChannel;
+
 import org.first5924.frc2022.states.IntakeState;
 import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-public class RetractIntake extends CommandBase {
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+public class RetractIntake extends InstantCommand {
   private final IntakeSubsystem mIntake;
 
-  /** Creates a new RetractIntake. */
   public RetractIntake(IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     mIntake = intakeSubsystem;
-    addRequirements(mIntake);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    switch (mIntake.getState()) {
-      case DEPLOYED:
-        mIntake.runIntakeMotor(-1);
-        break;
-      default:
-        break;
-    }
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    mIntake.setState(IntakeState.RETRACTED);
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    if (mIntake.getCurrent() >= 5) {
-      return true;
-    } else {
-      return false;
-    }
+  public void initialize() {
+    if (mIntake.getState() == IntakeState.DEPLOYED)
+      mIntake.setState(IntakeState.RETRACTING);
   }
 }

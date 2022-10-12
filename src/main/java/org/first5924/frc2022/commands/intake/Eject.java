@@ -4,6 +4,7 @@
 
 package org.first5924.frc2022.commands.intake;
 
+import org.first5924.frc2022.states.IntakeState;
 import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -20,25 +21,19 @@ public class Eject extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    mIntake.setState(IntakeState.EJECTING);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    switch (mIntake.getState()) {
-      case DEPLOYED:
-        // Running the Eject command interrupts the default flutter command
-        mIntake.flutterBreak();
-        mIntake.runIntakeWheels(-1);
-        break;
-      default:
-        break;
-    }
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    mIntake.setState(IntakeState.DEPLOYED);
+  }
 
   // Returns true when the command should end.
   @Override

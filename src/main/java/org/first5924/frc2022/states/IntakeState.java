@@ -7,5 +7,8 @@ package org.first5924.frc2022.states;
 /** Add your docs here. */
 public enum IntakeState {
     DEPLOYED,
-    RETRACTED
+    DEPLOYING,
+    RETRACTED,
+    RETRACTING,
+    EJECTING
 }
