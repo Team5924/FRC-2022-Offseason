@@ -22,9 +22,22 @@ public final class DriveConstants {
     public static final double kv = 0.97304;
     public static final double ka = 0.065879;
 
-    public static final double kP = 0.02;
+    public static final double kP = 0.08;
     public static final double kI = 0;
     public static final double kD = 0;
+
+    // For robot rotating
+    public static final double kRotateP = 0.24;
+    public static final double kRotateI = 0;
+    public static final double kRotateD = 0.008;
+    public static final double kRotatePositionTolerance = 1.25;
+    public static final double kRotateVelocityTolerance = 0.5;
+
+
+
+    // For robot rotating, in falcon units per second
+    public static final double kRotateMaxSpeed = 5;
+    public static final double kRotateMaxAccel = 5;
 
     public static final double kTrackwidth = 0.65292;
     public static final double kWheelCircumference = Units.inchesToMeters(4.18604 * Math.PI);
