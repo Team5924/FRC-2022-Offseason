@@ -6,6 +6,7 @@ package org.first5924.frc2022.commands.shooter;
 
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.ShooterSubsystem;
+import org.first5924.lib.util.LinearInterpolationTable;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -13,12 +14,16 @@ public class RunShooter extends CommandBase {
   private final ShooterSubsystem mShooter;
   private final LimelightSubsystem mLimelight;
 
+  private LinearInterpolationTable mVerticalOffsetToShooterSpeedTable = new LinearInterpolationTable();
+
   /** Creates a new RunShooter. */
   public RunShooter(ShooterSubsystem shooterSubsystem, LimelightSubsystem limelightSubsystem) {
     mShooter = shooterSubsystem;
     mLimelight = limelightSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
+
+    // mVerticalOffsetToShooterSpeedTable.add();
   }
 
   // Called when the command is initially scheduled.
@@ -28,7 +33,7 @@ public class RunShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mShooter.setShooterSpeed(mShooter.distanceToShooterRPM(mLimelight.getDistance()));
+    mShooter.setShooterSpeed(mVerticalOffsetToShooterSpeedTable.interpolate(mLimelight.getCrosshairVerticalOffset()));
   }
 
   // Called once the command ends or is interrupted.

@@ -9,7 +9,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.first5924.frc2022.constants.ShooterConstants;
-import org.first5924.lib.util.LinearInterpolationTable;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -25,8 +24,6 @@ public class ShooterSubsystem extends SubsystemBase {
   private SimpleMotorFeedforward mShooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.ks, ShooterConstants.kv, ShooterConstants.ka);
 
   private double mRPMSetpoint;
-
-  private LinearInterpolationTable mDistanceToShooterSpeedTable = new LinearInterpolationTable();
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
@@ -56,9 +53,5 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void stopShooter() {
     mLeaderShooterSpark.stopMotor();
-  }
-
-  public double distanceToShooterRPM(double distance) {
-    return mDistanceToShooterSpeedTable.interpolate(distance);
   }
 }

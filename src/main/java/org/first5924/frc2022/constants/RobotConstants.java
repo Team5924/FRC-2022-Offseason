@@ -10,7 +10,4 @@ public final class RobotConstants {
 
     // +-10&%
     public static final double kMaxFalconRPM = 6380;
-
-    // In inches
-    public static final double kGoalHeight = 69;
 }

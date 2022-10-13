@@ -4,10 +4,6 @@
 
 package org.first5924.frc2022.subsystems;
 
-import org.first5924.frc2022.constants.RobotConstants;
-import org.first5924.frc2022.constants.TurretConstants;
-
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,14 +29,5 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public double getCrosshairVerticalOffset() {
     return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-  }
-
-  public double getDistance() {
-    if (getCrosshairVerticalOffset() == 0) {
-      return 0;
-    } else {
-      // Unit: Inches
-      return (RobotConstants.kGoalHeight - TurretConstants.kLimelightLensHeight) / Math.tan(Units.degreesToRadians(TurretConstants.kLimelightMountAngle + getCrosshairVerticalOffset()));
-    }
   }
 }
