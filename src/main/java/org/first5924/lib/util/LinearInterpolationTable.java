@@ -39,8 +39,6 @@ public class LinearInterpolationTable {
                 if (i == 0) {
                     System.out.println("Equal to zero");
                     if (key < mCoordinates.get(i).get(0)) {
-                        throw new IndexOutOfBoundsException("Number is smaller than the key of the first entry");
-                    } else {
                         return mCoordinates.get(0).get(1);
                     }
                 } else {
@@ -55,6 +53,6 @@ public class LinearInterpolationTable {
                 }
             }
         }
-        throw new IndexOutOfBoundsException("Number is larger than the key of the last entry");
+        return mCoordinates.get(mCoordinates.size() - 1).get(1);
     }
 }
