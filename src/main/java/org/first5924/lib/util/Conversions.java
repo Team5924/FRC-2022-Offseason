@@ -5,7 +5,15 @@ public class Conversions {
 
     // Rotation conversions
 
+    public static double rotationsToFalconUnits(double rotations) {
+        double falconUnits = rotations * 2048;
+        return falconUnits;
+    }
 
+    public static double falconUnitsToRotations(double falconUnits) {
+        double rotations = falconUnits / 2048;
+        return rotations;
+    }
 
     // Rotation per time conversions
 
@@ -65,6 +73,16 @@ public class Conversions {
 
     public static double degreesToMeters(double degrees, double wheelCircumference) {
         double rotations = degrees / 360;
+        double meters = rotations * wheelCircumference;
+        return meters;
+    }
+
+    public static double metersToRotations(double robotMeters, double wheelCircumference) {
+        double rotations = robotMeters / wheelCircumference;
+        return rotations;
+    }
+
+    public static double rotationsToMeters(double rotations, double wheelCircumference) {
         double meters = rotations * wheelCircumference;
         return meters;
     }

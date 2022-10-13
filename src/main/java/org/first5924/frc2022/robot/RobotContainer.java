@@ -9,22 +9,31 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
+import org.first5924.frc2022.commands.drive.CurvatureDrive;
+import org.first5924.frc2022.commands.drive.TurnInPlace;
+
 import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.intake.RetractIntake;
+
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
+import org.first5924.frc2022.commands.autonomous.RotateToDegrees;
+import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
+import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
+import org.first5924.frc2022.commands.autonomous.routines.TwoBallDefensiveAuto;
 
 import org.first5924.frc2022.constants.OIConstants;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -44,6 +53,7 @@ public class RobotContainer {
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
+  
   private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mButtonX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
@@ -67,8 +77,8 @@ public class RobotContainer {
 
     // Auto
     mAutoChooser.setDefaultOption("5 Ball Auto", new FiveBallAuto(mDrive));
-    mAutoChooser.addOption("Print 5 Ball Auto", new FiveBallAutoPrint(mDrive));
-    mAutoChooser.addOption("Drive One Meter", new DriveOneMeter(mDrive));
+    mAutoChooser.addOption("2 Ball Defensive Auto", new TwoBallDefensiveAuto(mDrive));
+    mAutoChooser.addOption("1 Ball Auto", new OneBallAuto(mDrive));
     SmartDashboard.putData(mAutoChooser);
   }
 
