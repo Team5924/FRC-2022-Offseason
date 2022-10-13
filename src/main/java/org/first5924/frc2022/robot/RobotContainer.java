@@ -25,10 +25,12 @@ import org.first5924.frc2022.subsystems.IntakeSubsystem;
 import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
+import org.first5924.frc2022.commands.shooter.RunShooter;
 import org.first5924.frc2022.commands.intake.RetractIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.TwoBallDefensiveAuto;
+import org.first5924.frc2022.commands.conveyor.RunConveyor;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -59,7 +61,7 @@ public class RobotContainer {
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
-  // SENDABLECHOOSER COMMANDS
+  // Autonomous commands
   SendableChooser<Command> mAutoChooser = new SendableChooser<>();
 
   public RobotContainer() {
@@ -73,8 +75,9 @@ public class RobotContainer {
     // Default Commmands
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
-    //mConveyor.setDefaultCommand(new RunConveyor(mConveyor, mIntake));
     mIntake.setDefaultCommand(new RunIntake(mIntake));
+    mConveyor.setDefaultCommand(new RunConveyor(mConveyor));
+    mShooter.setDefaultCommand(new RunShooter(mShooter, mLimelight));
 
     // Configure the button bindings
     configureButtonBindings();
