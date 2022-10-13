@@ -17,9 +17,6 @@ import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.intake.RetractIntake;
 
-import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
-import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
-import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
 import org.first5924.frc2022.commands.autonomous.RotateToDegrees;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
@@ -53,10 +50,9 @@ public class RobotContainer {
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
-  
+
   private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
-  private final JoystickButton mButtonX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
   private final JoystickButton mButtonY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
