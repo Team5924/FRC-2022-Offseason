@@ -10,13 +10,13 @@ import org.first5924.frc2022.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class RunShooter extends CommandBase {
-  private final LimelightSubsystem mLimelight;
   private final ShooterSubsystem mShooter;
+  private final LimelightSubsystem mLimelight;
 
   /** Creates a new RunShooter. */
-  public RunShooter(LimelightSubsystem limelightSubsystem, ShooterSubsystem shooterSubsystem) {
-    mLimelight = limelightSubsystem;
+  public RunShooter(ShooterSubsystem shooterSubsystem, LimelightSubsystem limelightSubsystem) {
     mShooter = shooterSubsystem;
+    mLimelight = limelightSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
   }
