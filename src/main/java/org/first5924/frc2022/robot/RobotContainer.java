@@ -113,12 +113,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mDriverB.whileHeld(new InstantCommand(() -> mTurret.setVoltage(1)));
-    mDriverB.whenReleased(new InstantCommand((() -> mTurret.setVoltage(0))));
-    mDriverA.whileHeld(new InstantCommand(() -> mTurret.setVoltage(-1)));
-    mDriverA.whenReleased(new InstantCommand(() -> mTurret.setVoltage(0)));
-    mDriverX.whenPressed(new InstantCommand(mTurret::zeroTurret));
+    // mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    // mDriverB.whileHeld(new InstantCommand(() -> mTurret.setVoltage(1)));
+    // mDriverB.whenReleased(new InstantCommand((() -> mTurret.setVoltage(0))));
+    // mDriverA.whileHeld(new InstantCommand(() -> mTurret.setVoltage(-1)));
+    // mDriverA.whenReleased(new InstantCommand(() -> mTurret.setVoltage(0)));
+    // mDriverX.whenPressed(new InstantCommand(mTurret::zeroTurret));
 
     mButtonA.whenPressed(new DeployIntake(mIntake));
     mButtonB.whenPressed(new RetractIntake(mIntake));
