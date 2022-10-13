@@ -18,4 +18,10 @@ public class TurretConstants {
     public static final double kD = 0.00033;
     public static final double kPositionTolerance = 15;
     public static final double kVelocityTolerance = 5;
+
+    // Inches
+    public static final double kLimelightLensHeight = 69;
+
+    // Degrees
+    public static final double kLimelightMountAngle = 69;
 }
