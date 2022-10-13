@@ -70,7 +70,7 @@ public class RunIntake extends CommandBase {
         }
         break;
       case EJECTING:
-        mIntake.runWheels(-1);
+        mIntake.runWheels(-0.75);
         break;
     }
   }

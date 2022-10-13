@@ -18,8 +18,8 @@ import org.first5924.frc2022.states.IntakeState;
 
 public class IntakeSubsystem extends SubsystemBase {
   // Instances
-  private WPI_TalonFX mIntakeMotor = new WPI_TalonFX(IntakeConstants.kIntakeTalon);
-  private CANSparkMax mIntakeWheels = new CANSparkMax(IntakeConstants.kIntakeWheels, MotorType.kBrushless);
+  private WPI_TalonFX mIntakeMotor = new WPI_TalonFX(IntakeConstants.kIntakeTalonPort);
+  private CANSparkMax mIntakeWheels = new CANSparkMax(IntakeConstants.kIntakeWheelsTalonPort, MotorType.kBrushless);
 
   // Variables
   private IntakeState mState;

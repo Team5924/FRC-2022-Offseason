@@ -22,7 +22,9 @@ public class Eject extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    mIntake.setState(IntakeState.EJECTING);
+    if (mIntake.getState().equals(IntakeState.DEPLOYED)) {
+      mIntake.setState(IntakeState.EJECTING);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
