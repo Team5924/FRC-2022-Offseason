@@ -13,6 +13,8 @@ public class Conversions {
     public static double falconUnitsToDegrees(double falconUnits) {
         double degrees = falconUnits / 2048 * 360;
         return degrees;
+    }
+
     public static double rotationsToFalconUnits(double rotations) {
         double falconUnits = rotations * 2048;
         return falconUnits;
