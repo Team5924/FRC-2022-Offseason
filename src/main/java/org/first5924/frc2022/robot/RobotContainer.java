@@ -13,7 +13,6 @@ import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.intake.RetractIntake;
-import org.first5924.frc2022.commands.intake.Stop;
 import org.first5924.frc2022.commands.autonomous.routines.DriveOneMeter;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.FiveBallAutoPrint;
@@ -86,7 +85,6 @@ public class RobotContainer {
 
     mButtonA.whenPressed(new DeployIntake(mIntake));
     mButtonB.whenPressed(new RetractIntake(mIntake));
-    mButtonX.whenPressed(new Stop(mIntake));
     mButtonY.whenHeld(new Eject(mIntake));
   }
 
