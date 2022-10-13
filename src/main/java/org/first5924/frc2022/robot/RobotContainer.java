@@ -72,10 +72,7 @@ public class RobotContainer {
   private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mDriverA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mDriverX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
-
-  private final JoystickButton mButtonA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
-  private final JoystickButton mButtonB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
-  private final JoystickButton mButtonY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
+  private final JoystickButton mDriverY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
 
   // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
 
@@ -120,9 +117,9 @@ public class RobotContainer {
     // mDriverA.whenReleased(new InstantCommand(() -> mTurret.setVoltage(0)));
     // mDriverX.whenPressed(new InstantCommand(mTurret::zeroTurret));
 
-    mButtonA.whenPressed(new DeployIntake(mIntake));
-    mButtonB.whenPressed(new RetractIntake(mIntake));
-    mButtonY.whenHeld(new Eject(mIntake));
+    mDriverA.whenPressed(new DeployIntake(mIntake));
+    mDriverB.whenPressed(new RetractIntake(mIntake));
+    mDriverY.whenHeld(new Eject(mIntake));
   }
 
   /**
