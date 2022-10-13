@@ -43,7 +43,7 @@ public class RunIntake extends CommandBase {
           timer.stop();
           timer.reset();
         }
-        // mIntake.runIntakeWheels(0.65);
+        mIntake.runWheels(0.65);
         break;
       case RETRACTED:
         mIntake.setNeutralMode(NeutralMode.Brake);
