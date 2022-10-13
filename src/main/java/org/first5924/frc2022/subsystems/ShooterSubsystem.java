@@ -30,7 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
-    mFollowerShooterSpark.follow(mLeaderShooterSpark);
+    mFollowerShooterSpark.follow(mLeaderShooterSpark, true);
 
     mShooterEncoder = mLeaderShooterSpark.getEncoder();
     mShooterEncoder.setVelocityConversionFactor(1/60);
@@ -52,6 +52,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setShooterSpeed(double RPM) {
     mRPMSetpoint = RPM;
     mLeaderShooterSpark.setVoltage(mShooterController.calculate(getShooterRPM(), RPM) + mShooterFeedforward.calculate(RPM));
+  }
+
+  public void stopShooter() {
+    mLeaderShooterSpark.stopMotor();
   }
 
   public double distanceToShooterRPM(double distance) {
