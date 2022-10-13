@@ -14,6 +14,7 @@ import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.turret.TurretTrackTarget;
 import org.first5924.frc2022.constants.OIConstants;
+import org.first5924.frc2022.subsystems.ClimberSubsystem;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.TurretSubsystem;
@@ -26,6 +27,8 @@ import org.first5924.frc2022.commands.intake.RetractIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.TwoBallDefensiveAuto;
+import org.first5924.frc2022.commands.climber.ExtendClimber;
+import org.first5924.frc2022.commands.climber.RetractClimber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,17 +45,25 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final LimelightSubsystem mLimelight = new LimelightSubsystem();
   private final IntakeSubsystem mIntake = new IntakeSubsystem();
+  private final ClimberSubsystem mClimber = new ClimberSubsystem();
 
   // CONTROLLER & BUTTONS
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
+  private final XboxController mOperatorController = new XboxController(OIConstants.kOperatorController);
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
+  private final JoystickButton mDriverRightBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mDriverA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
+  private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mDriverX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
   private final JoystickButton mDriverY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
 
-  // private final XboxController mOperatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER);
+  private final JoystickButton mOperatorLeftBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mOperatorRightBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mOperatorA = new JoystickButton(mOperatorController, XboxController.Button.kA.value);
+  private final JoystickButton mOperatorB = new JoystickButton(mOperatorController, XboxController.Button.kB.value);
+  private final JoystickButton mOperatorX = new JoystickButton(mOperatorController, XboxController.Button.kX.value);
+  private final JoystickButton mOperatorY = new JoystickButton(mOperatorController, XboxController.Button.kY.value);
 
   // SENDABLECHOOSER COMMANDS
   SendableChooser<Command> mAutoChooser = new SendableChooser<>();
@@ -62,6 +73,7 @@ public class RobotContainer {
     mTurret.register();
     mLimelight.register();
     mIntake.register();
+    mClimber.register();
 
     // Default Commmands
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
@@ -98,6 +110,9 @@ public class RobotContainer {
     mDriverA.whenPressed(new DeployIntake(mIntake));
     mDriverB.whenPressed(new RetractIntake(mIntake));
     mDriverY.whenHeld(new Eject(mIntake));
+
+    mOperatorX.whenHeld(new RetractClimber(mClimber, mOperatorController::getRightX));
+    mOperatorY.whenHeld(new ExtendClimber(mClimber, mOperatorController::getRightX));
   }
 
   /**
