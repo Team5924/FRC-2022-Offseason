@@ -4,17 +4,20 @@
 
 package org.first5924.frc2022.robot;
 
+import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
+import org.first5924.frc2022.commands.drive.CurvatureDrive;
+import org.first5924.frc2022.constants.OIConstants;
+import org.first5924.frc2022.subsystems.ConveyorSubsystem;
+import org.first5924.frc2022.subsystems.DriveSubsystem;
+import org.first5924.frc2022.subsystems.ShooterSubsystem;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
-import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.turret.TurretTrackTarget;
-import org.first5924.frc2022.constants.OIConstants;
-import org.first5924.frc2022.subsystems.DriveSubsystem;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.TurretSubsystem;
 import org.first5924.frc2022.subsystems.IntakeSubsystem;
@@ -42,6 +45,8 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final LimelightSubsystem mLimelight = new LimelightSubsystem();
   private final IntakeSubsystem mIntake = new IntakeSubsystem();
+  private final ConveyorSubsystem mConveyor = new ConveyorSubsystem();
+  private final ShooterSubsystem mShooter = new ShooterSubsystem();
 
   // CONTROLLER & BUTTONS
   private final XboxController mDriverController = new XboxController(OIConstants.kDriverController);
@@ -62,6 +67,8 @@ public class RobotContainer {
     mTurret.register();
     mLimelight.register();
     mIntake.register();
+    mConveyor.register();
+    mShooter.register();
 
     // Default Commmands
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
