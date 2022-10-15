@@ -8,13 +8,11 @@ import org.first5924.frc2022.subsystems.ConveyorSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class RunConveyor extends CommandBase {
+public class ManualRunConveyor extends CommandBase {
   private final ConveyorSubsystem mConveyor;
 
-  private boolean isRunning = false;
-
-  /** Creates a new RunConveyor. */
-  public RunConveyor(ConveyorSubsystem conveyorSubsystem) {
+  /** Creates a new ManualRunConveyor. */
+  public ManualRunConveyor(ConveyorSubsystem conveyorSubsystem) {
     mConveyor = conveyorSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(mConveyor);
@@ -27,24 +25,14 @@ public class RunConveyor extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (isRunning) {
-      if (mConveyor.isUpperBeamBroken()) {
-        isRunning = false;
-        mConveyor.runConveyor(0);
-      } else {
-        mConveyor.runConveyor(0.5);
-      }
-    } else {
-      if (mConveyor.isLowerBeamBroken() && !mConveyor.isUpperBeamBroken()) {
-        isRunning = true;
-        mConveyor.runConveyor(0.5);
-      }
-    }
+    mConveyor.runConveyor(0.3);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    mConveyor.runConveyor(0);
+  }
 
   // Returns true when the command should end.
   @Override

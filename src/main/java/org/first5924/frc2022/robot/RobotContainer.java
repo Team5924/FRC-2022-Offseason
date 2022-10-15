@@ -32,7 +32,7 @@ import org.first5924.frc2022.commands.intake.RetractIntake;
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
 import org.first5924.frc2022.commands.autonomous.routines.TwoBallDefensiveAuto;
 import org.first5924.frc2022.commands.conveyor.FeedShooter;
-import org.first5924.frc2022.commands.conveyor.RunConveyor;
+import org.first5924.frc2022.commands.conveyor.ManualRunConveyor;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,7 +62,7 @@ public class RobotContainer {
   private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mDriverX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
   private final JoystickButton mDriverY = new JoystickButton(mDriverController, XboxController.Button.kY.value);
-  
+
   private final JoystickButton mOperatorLeftBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mOperatorRightBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mOperatorA = new JoystickButton(mOperatorController, XboxController.Button.kA.value);
@@ -86,7 +86,6 @@ public class RobotContainer {
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
     mIntake.setDefaultCommand(new RunIntake(mIntake));
-    mConveyor.setDefaultCommand(new RunConveyor(mConveyor));
     mShooter.setDefaultCommand(new RunShooter(mShooter, mLimelight));
 
     configureButtonBindings();
@@ -107,6 +106,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
+    mDriverA.whenHeld(new ManualRunConveyor(mConveyor));
 
     mOperatorLeftBumper.whenPressed(new RetractIntake(mIntake));
     mOperatorRightBumper.whenPressed(new DeployIntake(mIntake));
