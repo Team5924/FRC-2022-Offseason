@@ -8,6 +8,7 @@ import org.first5924.frc2022.commands.autonomous.routines.FiveBallAuto;
 import org.first5924.frc2022.commands.drive.CurvatureDrive;
 import org.first5924.frc2022.commands.drive.TurnInPlace;
 import org.first5924.frc2022.constants.OIConstants;
+import org.first5924.frc2022.states.ShooterState;
 import org.first5924.frc2022.subsystems.ConveyorSubsystem;
 import org.first5924.frc2022.subsystems.DriveSubsystem;
 import org.first5924.frc2022.subsystems.ShooterSubsystem;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.first5924.frc2022.commands.turret.TurretTrackTarget;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
@@ -27,6 +29,8 @@ import org.first5924.frc2022.commands.intake.DeployIntake;
 import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.shooter.RunShooter;
+import org.first5924.frc2022.commands.shooter.ShooterEject;
+import org.first5924.frc2022.commands.shooter.StopShooter;
 import org.first5924.frc2022.commands.intake.RetractIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
@@ -58,6 +62,7 @@ public class RobotContainer {
 
   private final JoystickButton mDriverLeftBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mDriverRightBumper = new JoystickButton(mDriverController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mDriverStart = new JoystickButton(mDriverController, XboxController.Button.kStart.value);
   private final JoystickButton mDriverA = new JoystickButton(mDriverController, XboxController.Button.kA.value);
   private final JoystickButton mDriverB = new JoystickButton(mDriverController, XboxController.Button.kB.value);
   private final JoystickButton mDriverX = new JoystickButton(mDriverController, XboxController.Button.kX.value);
@@ -65,6 +70,7 @@ public class RobotContainer {
 
   private final JoystickButton mOperatorLeftBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
   private final JoystickButton mOperatorRightBumper = new JoystickButton(mOperatorController, XboxController.Button.kLeftBumper.value);
+  private final JoystickButton mOperatorStart = new JoystickButton(mOperatorController, XboxController.Button.kStart.value);
   private final JoystickButton mOperatorA = new JoystickButton(mOperatorController, XboxController.Button.kA.value);
   private final JoystickButton mOperatorB = new JoystickButton(mOperatorController, XboxController.Button.kB.value);
   private final JoystickButton mOperatorX = new JoystickButton(mOperatorController, XboxController.Button.kX.value);
@@ -112,7 +118,12 @@ public class RobotContainer {
     mOperatorRightBumper.whenPressed(new DeployIntake(mIntake));
     mOperatorA.whenHeld(new Eject(mIntake));
 
+    mOperatorY.whenHeld(new ManualRunConveyor(mConveyor));
+
+    mOperatorX.whenHeld(new ShooterEject(mShooter, mConveyor));
     mOperatorB.whenHeld(new FeedShooter(mConveyor));
+
+    mOperatorStart.whenPressed(new ConditionalCommand(new StopShooter(mShooter), new RunShooter(mShooter, mLimelight), () -> mShooter.getState().equals(ShooterState.RUNNING)));
   }
 
   /**

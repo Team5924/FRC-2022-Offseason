@@ -9,6 +9,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.first5924.frc2022.constants.ShooterConstants;
+import org.first5924.frc2022.states.ShooterState;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,6 +23,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private PIDController mShooterController = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
   private SimpleMotorFeedforward mShooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.ks, ShooterConstants.kv, ShooterConstants.ka);
+
+  private ShooterState mState = ShooterState.RUNNING;
 
   private double mRPMSetpoint;
 
@@ -38,6 +41,14 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public ShooterState getState() {
+    return mState;
+  }
+
+  public void setState(ShooterState state) {
+    mState = state;
+  }
+
   public boolean isShooterAtSpeed() {
     return Math.abs(getShooterRPM() - mRPMSetpoint) < 50;
   }
@@ -49,6 +60,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setShooterSpeed(double RPM) {
     mRPMSetpoint = RPM;
     mLeaderShooterSpark.setVoltage(mShooterController.calculate(getShooterRPM(), RPM) + mShooterFeedforward.calculate(RPM));
+  }
+
+  public void setVoltage(double voltage) {
+    mLeaderShooterSpark.setVoltage(voltage);
   }
 
   public void stopShooter() {

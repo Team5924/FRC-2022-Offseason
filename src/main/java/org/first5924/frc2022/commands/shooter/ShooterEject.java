@@ -4,31 +4,33 @@
 
 package org.first5924.frc2022.commands.shooter;
 
-import org.first5924.frc2022.states.ShooterState;
+import org.first5924.frc2022.subsystems.ConveyorSubsystem;
 import org.first5924.frc2022.subsystems.ShooterSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class StopShooter extends CommandBase {
+public class ShooterEject extends CommandBase {
   private final ShooterSubsystem mShooter;
+  private final ConveyorSubsystem mConveyor;
 
-  /** Creates a new StopShooter. */
-  public StopShooter(ShooterSubsystem shooterSubsystem) {
+  /** Creates a new ShooterEject. */
+  public ShooterEject(ShooterSubsystem shooterSubsystem, ConveyorSubsystem conveyorSubsystem) {
     mShooter = shooterSubsystem;
+    mConveyor = conveyorSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(mShooter);
+    addRequirements(mShooter, mConveyor);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    mShooter.setState(ShooterState.STOPPED);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mShooter.stopShooter();
+    mConveyor.runConveyor(0.5);
+    mConveyor.runFeeder(0.5);
+    mShooter.setVoltage(3);
   }
 
   // Called once the command ends or is interrupted.

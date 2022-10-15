@@ -4,6 +4,7 @@
 
 package org.first5924.frc2022.commands.shooter;
 
+import org.first5924.frc2022.states.ShooterState;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
 import org.first5924.frc2022.subsystems.ShooterSubsystem;
 import org.first5924.lib.util.LinearInterpolationTable;
@@ -28,12 +29,15 @@ public class RunShooter extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    mShooter.setState(ShooterState.RUNNING);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mShooter.setShooterSpeed(mVerticalOffsetToShooterSpeedTable.interpolate(mLimelight.getCrosshairVerticalOffset()));
+    // mShooter.setShooterSpeed(mVerticalOffsetToShooterSpeedTable.interpolate(mLimelight.getCrosshairVerticalOffset()));
+    mShooter.setVoltage(7);
   }
 
   // Called once the command ends or is interrupted.
