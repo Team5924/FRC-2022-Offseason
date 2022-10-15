@@ -2,29 +2,23 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.first5924.frc2022.commands.shooter;
+package org.first5924.frc2022.commands.drive;
 
-import org.first5924.frc2022.states.ShooterState;
+import org.first5924.frc2022.subsystems.DriveSubsystem;
 import org.first5924.frc2022.subsystems.LimelightSubsystem;
-import org.first5924.frc2022.subsystems.ShooterSubsystem;
-import org.first5924.lib.util.LinearInterpolationTable;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class RunShooter extends CommandBase {
-  private final ShooterSubsystem mShooter;
+public class RotateToHub extends CommandBase {
+  private final DriveSubsystem mDrive;
   private final LimelightSubsystem mLimelight;
 
-  private LinearInterpolationTable mVerticalOffsetToShooterSpeedTable = new LinearInterpolationTable();
-
-  /** Creates a new RunShooter. */
-  public RunShooter(ShooterSubsystem shooterSubsystem, LimelightSubsystem limelightSubsystem) {
-    mShooter = shooterSubsystem;
+  /** Creates a new RotateToHub. */
+  public RotateToHub(DriveSubsystem driveSubsystem, LimelightSubsystem limelightSubsystem) {
+    mDrive = driveSubsystem;
     mLimelight = limelightSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem);
-
-    // mVerticalOffsetToShooterSpeedTable.add();
+    addRequirements(mDrive, mLimelight);
   }
 
   // Called when the command is initially scheduled.
@@ -34,11 +28,10 @@ public class RunShooter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // mShooter.setShooterSpeed(mVerticalOffsetToShooterSpeedTable.interpolate(mLimelight.getCrosshairVerticalOffset()));
-    if (mShooter.getState().equals(ShooterState.RUNNING)) {
-      mShooter.set(0.6);
+    if (mLimelight.isTargetDetected()) {
+      mDrive.rotateToDegrees(mDrive.getOffsetRotation2d().getDegrees() - mLimelight.getCrosshairHorizontalOffset(), 3.5);
     } else {
-      mShooter.set(0);
+      mDrive.turnInPlace(0, -0.5);
     }
   }
 
@@ -49,6 +42,6 @@ public class RunShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(mLimelight.getCrosshairHorizontalOffset()) <= 1.1;
   }
 }

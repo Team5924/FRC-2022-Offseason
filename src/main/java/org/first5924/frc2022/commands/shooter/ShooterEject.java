@@ -28,14 +28,17 @@ public class ShooterEject extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mConveyor.runConveyor(0.5);
-    mConveyor.runFeeder(0.5);
-    mShooter.setVoltage(3);
+    mConveyor.runConveyor(0.65);
+    mConveyor.runFeeder(0.65);
+    mShooter.set(0.35);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    mConveyor.runConveyor(0);
+    mConveyor.runFeeder(0);
+  }
 
   // Returns true when the command should end.
   @Override

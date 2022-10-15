@@ -30,11 +30,13 @@ import org.first5924.frc2022.commands.intake.Eject;
 import org.first5924.frc2022.commands.intake.RunIntake;
 import org.first5924.frc2022.commands.shooter.RunShooter;
 import org.first5924.frc2022.commands.shooter.ShooterEject;
-import org.first5924.frc2022.commands.shooter.StopShooter;
+import org.first5924.frc2022.commands.shooter.ToggleShooter;
 import org.first5924.frc2022.commands.intake.RetractIntake;
 
 import org.first5924.frc2022.commands.autonomous.routines.OneBallAuto;
+import org.first5924.frc2022.commands.autonomous.routines.ThreeBallAutoTurretless;
 import org.first5924.frc2022.commands.autonomous.routines.TwoBallDefensiveAuto;
+import org.first5924.frc2022.commands.autonomous.routines.TwoOrOneBallAutoTurretless;
 import org.first5924.frc2022.commands.conveyor.FeedShooter;
 import org.first5924.frc2022.commands.conveyor.ManualRunConveyor;
 
@@ -90,15 +92,14 @@ public class RobotContainer {
     mShooter.register();
 
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
-    mIntake.setDefaultCommand(new RunIntake(mIntake));
+    //mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
+    //mIntake.setDefaultCommand(new RunIntake(mIntake));
     mShooter.setDefaultCommand(new RunShooter(mShooter, mLimelight));
 
     configureButtonBindings();
 
-    mAutoChooser.setDefaultOption("5 Ball Auto", new FiveBallAuto(mDrive));
-    mAutoChooser.addOption("2 Ball Defensive Auto", new TwoBallDefensiveAuto(mDrive));
-    mAutoChooser.addOption("1 Ball Auto", new OneBallAuto(mDrive));
+    mAutoChooser.setDefaultOption("3 Ball Auto Turretless", new ThreeBallAutoTurretless(mDrive, mIntake, mLimelight, mConveyor));
+    mAutoChooser.addOption("2 or 1 Ball Auto Turretless", new TwoOrOneBallAutoTurretless(mDrive, mIntake, mLimelight, mConveyor));
     SmartDashboard.putData(mAutoChooser);
   }
 
@@ -123,7 +124,7 @@ public class RobotContainer {
     mOperatorX.whenHeld(new ShooterEject(mShooter, mConveyor));
     mOperatorB.whenHeld(new FeedShooter(mConveyor));
 
-    mOperatorStart.whenPressed(new ConditionalCommand(new StopShooter(mShooter), new RunShooter(mShooter, mLimelight), () -> mShooter.getState().equals(ShooterState.RUNNING)));
+    mOperatorStart.whenPressed(new ConditionalCommand(new ToggleShooter(mShooter), new RunShooter(mShooter, mLimelight), () -> mShooter.getState().equals(ShooterState.RUNNING)));
   }
 
   /**

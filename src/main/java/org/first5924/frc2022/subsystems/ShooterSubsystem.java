@@ -63,7 +63,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setVoltage(double voltage) {
-    mLeaderShooterSpark.setVoltage(voltage);
+    mLeaderShooterSpark.setVoltage(-voltage);
+  }
+
+  public void set(double percent) {
+    mLeaderShooterSpark.set(-percent);
   }
 
   public void stopShooter() {
