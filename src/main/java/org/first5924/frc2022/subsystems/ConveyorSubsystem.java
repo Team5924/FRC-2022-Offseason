@@ -28,6 +28,6 @@ public class ConveyorSubsystem extends SubsystemBase {
   }
 
   public void runFeeder(double percent) {
-    mFeeder.set(percent);
+    mFeeder.set(-percent);
   }
 }
