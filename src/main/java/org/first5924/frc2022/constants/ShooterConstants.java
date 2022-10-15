@@ -6,8 +6,8 @@ package org.first5924.frc2022.constants;
 
 /** Add your docs here. */
 public final class ShooterConstants {
-    public static final int kLeaderShooterSparkPort = 696;
-    public static final int kFollowerShooterSparkPort = 969;
+    public static final int kLeaderShooterSparkPort = 13;
+    public static final int kFollowerShooterSparkPort = 14;
 
     // In units of rotations
     public static final double ks = 0;

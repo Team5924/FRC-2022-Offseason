@@ -6,7 +6,7 @@ package org.first5924.frc2022.constants;
 
 /** Add your docs here. */
 public class TurretConstants {
-    public static final int kSparkPort = 8;
+    public static final int kSparkPort = 10;
 
     public static final double kGearRatio = 204/36;
 

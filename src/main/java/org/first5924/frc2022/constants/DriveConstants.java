@@ -14,8 +14,8 @@ public final class DriveConstants {
     public static final int kRightFrontDrive = 2;
     public static final int kRightBackDrive = 1;
 
-    public static final int kLeftCANCoder = 10;
-    public static final int kRightCANCoder = 11;
+    public static final int kLeftCANCoder = 5;
+    public static final int kRightCANCoder = 6;
 
     // In units of rotations
     public static final double ks = 0.57486;

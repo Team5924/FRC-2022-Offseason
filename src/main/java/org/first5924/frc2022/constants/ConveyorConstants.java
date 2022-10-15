@@ -6,8 +6,6 @@ package org.first5924.frc2022.constants;
 
 /** Add your docs here. */
 public final class ConveyorConstants {
-    public static final int kConveyorSparkPort = 69;
-    public static final int kFeederSparkPort = 420;
-    public static final int kLowerBeamBreakPort = 69420;
-    public static final int kUpperBeamBreakPort = 5924;
+    public static final int kConveyorSparkPort = 12;
+    public static final int kFeederSparkPort = 11;
 }
