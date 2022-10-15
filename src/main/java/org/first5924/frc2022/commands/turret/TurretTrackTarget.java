@@ -43,6 +43,9 @@ public class TurretTrackTarget extends CommandBase {
           mTurret.setState(TurretState.TRACKING);
         }
         break;
+      case DISABLED:
+        mTurret.setState(TurretState.WAITING);
+        break;
     }
   }
 

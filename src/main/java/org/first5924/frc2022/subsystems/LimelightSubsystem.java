@@ -26,4 +26,8 @@ public class LimelightSubsystem extends SubsystemBase {
   public double getCrosshairHorizontalOffset() {
     return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
   }
+
+  public double getCrosshairVerticalOffset() {
+    return NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
+  }
 }
