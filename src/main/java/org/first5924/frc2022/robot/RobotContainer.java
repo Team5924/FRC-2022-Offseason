@@ -93,7 +93,7 @@ public class RobotContainer {
 
     mDrive.setDefaultCommand(new CurvatureDrive(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
     //mTurret.setDefaultCommand(new TurretTrackTarget(mTurret, mLimelight));
-    //mIntake.setDefaultCommand(new RunIntake(mIntake));
+    mIntake.setDefaultCommand(new RunIntake(mIntake));
     mShooter.setDefaultCommand(new RunShooter(mShooter, mLimelight));
 
     configureButtonBindings();
@@ -113,7 +113,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     mDriverLeftBumper.whenHeld(new TurnInPlace(mDrive, mDriverController::getLeftY, mDriverController::getRightX));
-    mDriverA.whenHeld(new ManualRunConveyor(mConveyor));
 
     mOperatorLeftBumper.whenPressed(new RetractIntake(mIntake));
     mOperatorRightBumper.whenPressed(new DeployIntake(mIntake));
